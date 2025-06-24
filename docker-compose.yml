@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver
+    environment:
+        SA_PASSWORD: ${DB_PASSWORD}
+        ACCEPT_EULA: Y
+    ports:
+      - "1433:1433"
+
+  web:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: roombooking
+    depends_on:
+      - db
+    environment:
+      ConnectionStrings__DefaultConnection: Server=${DB_HOST};Database=${DB_NAME};User=${DB_USER};Password=${DB_PASSWORD};Encrypt=False;TrustServerCertificate=True
+    ports:
+      - "5245:8080"

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8" />
+    <title>RoomBookingApp</title>
+    <link rel="stylesheet" href="css/site.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet" />
+
+    <style>
+        #calendarInput {
+            position: absolute;
+            top: 60px; /* ggf. anpassen */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="header-bar">
+        <div class="nav-center">
+            <button id="prevDay" class="button-primary small">&laquo;</button>
+            <div class="date-display" id="dateDisplay">22.06.2025</div>
+            <button id="nextDay" class="button-primary small">&raquo;</button>
+            <button id="calendarIcon" class="calendar-button">
+                <i class="fas fa-calendar-alt"></i>
+            </button>
+        </div>
+    </div>
+
+    <input type="text" id="calendarInput" />
+
+    <div id="bookingGrid" class="grid"></div>
+</div>
+
+<!-- Modal für Buchung -->
+<div id="modal" class="modal hidden">
+    <div class="modal-content">
+        <h3>Buchung für Platz <span id="modalRoom"></span> um <span id="modalHour"></span>:00</h3>
+        <label>Von: <input type="time" id="startTime" required /></label>
+        <label>Bis: <input type="time" id="endTime" required /></label>
+        <button id="bookBtn" onclick="saveBooking()" class="button-primary">Buchen</button>
+        <button id="cancelBtn" onclick="cancelBooking()" class="button-primary hidden">Stornieren</button>
+        <button onclick="closeModal()" class="button-primary small">Abbrechen</button>
+    </div>
+</div>
+
+<!-- Flatpickr + eigene Logik -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="js/site.js"></script>
+</body>
+</html>

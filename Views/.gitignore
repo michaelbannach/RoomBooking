@@ -1,0 +1,12 @@
+# Sensible Umgebungsvariablen
+.env
+
+# Build-Ordner
+bin/
+obj/
+
+# IDE-Konfigurationen
+.vscode/
+.idea/
+*.user
+*.suo
