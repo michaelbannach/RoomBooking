@@ -7,7 +7,7 @@ Entwickelt mit ASP.NET Core, Entity Framework Core und Docker.
 
 ## Screenshots
 
-![RoomBooking](RoomBookingC/wwwroot/img/Raumbuchung_Übersicht.png)
+![RoomBooking](wwwroot/img/Raumbuchung_Übersicht.png)
 ![Roombooking](RoomBookingC/wwwroot/img/MiniKalendar_Detail.PNG)
 ![Roombooking](RoomBookingC/wwwroot/img/Buchungsfenster_Detail.png)
 
