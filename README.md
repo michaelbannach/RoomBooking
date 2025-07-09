@@ -21,6 +21,6 @@ Web-App zur Raum- und Arbeitsplatzbuchung – entwickelt mit ASP.NET Core, Entit
 ##  Setup (lokal)
 
 ```bash
-git clone https://github.com/dein-nutzername/roombooking.git
+git clone https://github.com/michaelbannach/roombooking.git
 cd roombooking
 docker-compose up --build
