@@ -1,22 +1,28 @@
-version: "3.9"
 services:
   db:
-    image: mcr.microsoft.com/mssql/server:2019-latest
-    container_name: sqlserver
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: roombookingc-db
     environment:
-        SA_PASSWORD: ${DB_PASSWORD}
-        ACCEPT_EULA: Y
+      SA_PASSWORD: ${DB_PASSWORD}
+      ACCEPT_EULA: "Y"
+      TZ: Europe/Berlin
     ports:
       - "1433:1433"
+    volumes:
+      - sqlvolume:/var/opt/mssql
 
-  web:
-    build: 
+  app:
+    build:
       context: .
       dockerfile: Dockerfile
-    container_name: roombooking
+    container_name: roombookingc-app
     depends_on:
       - db
     environment:
-      ConnectionStrings__DefaultConnection: Server=${DB_HOST};Database=${DB_NAME};User=${DB_USER};Password=${DB_PASSWORD};Encrypt=False;TrustServerCertificate=True
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: Server=${DB_HOST};Database=${DB_NAME};User Id=${DB_USER};Password=${DB_PASSWORD};Encrypt=False;TrustServerCertificate=True
     ports:
       - "5245:8080"
+
+volumes:
+  sqlvolume:

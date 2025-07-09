@@ -142,3 +142,4 @@ C:\Users\micha\RiderProjects\RoomBookingC\obj\Debug\net8.0\refint\RoomBookingC.d
 C:\Users\micha\RiderProjects\RoomBookingC\obj\Debug\net8.0\RoomBookingC.pdb
 C:\Users\micha\RiderProjects\RoomBookingC\obj\Debug\net8.0\RoomBookingC.genruntimeconfig.cache
 C:\Users\micha\RiderProjects\RoomBookingC\obj\Debug\net8.0\ref\RoomBookingC.dll
+C:\Users\micha\RiderProjects\RoomBookingC\obj\Debug\net8.0\RoomBookingC.sourcelink.json

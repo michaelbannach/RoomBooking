@@ -1,51 +1,73 @@
+using System;
+using System.Linq;
 using System.Text.Json;
+using System.Threading;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.EntityFrameworkCore;
 using RoomBookingC.Data;
 using RoomBookingC.Models;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
-
-// Add services to the container.
+// Authentication & Authorization
 builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
     .AddNegotiate();
 
+builder.Services.AddAuthorization();
 
-builder.Services.AddControllers()
+// MVC & JSON
+builder.Services.AddControllersWithViews()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
     });
-builder.Services.AddControllersWithViews();
-builder.Services.AddAuthorization();
-builder.Services.AddControllers();
+
+// Datenbankkontext
 builder.Services.AddDbContext<RoomBookContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 var app = builder.Build();
 
+// MIGRATIONS & INITIAL-DATEN MIT RETRY
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<RoomBookContext>();
-    db.Database.EnsureCreated();
+    
+    const int maxRetries = 10;
+    var retries = maxRetries;
 
-    if (!db.Rooms.Any())
+    while (retries > 0)
     {
-        db.Rooms.AddRange(
-            new Room { Name = "Besprechungsraum 1" },
-            new Room { Name = "Besprechungsraum 2" },
-            new Room { Name = "Besprechungsraum 3" }
-        );
-        db.SaveChanges();
+        try
+        {
+            db.Database.Migrate(); // Migrations anwenden
+
+            // Seed-Daten, falls leer
+            if (!db.Rooms.Any())
+            {
+                db.Rooms.AddRange(
+                    new Room { Name = "Besprechungsraum 1" },
+                    new Room { Name = "Besprechungsraum 2" },
+                    new Room { Name = "Besprechungsraum 3" }
+                );
+                db.SaveChanges();
+            }
+
+            break; // Erfolgreich
+        }
+        catch (Exception ex)
+        {
+            retries--;
+            Console.WriteLine($" Datenbankverbindung fehlgeschlagen ({maxRetries - retries}/{maxRetries}). Fehler: {ex.Message}");
+            Thread.Sleep(3000); // 3 Sekunden warten
+        }
     }
 }
 
-// Configure the HTTP request pipeline.
+// Middlewares
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
