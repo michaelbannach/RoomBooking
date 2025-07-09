@@ -19,12 +19,12 @@ Entwickelt mit ASP.NET Core, Entity Framework Core und Docker.
 
 ## Funktionen
 
-- Räume tageweise im **30-Minuten-Takt** buchen
-- **Konflikterkennung** & Validierung bei Buchungen
-- **Eigene Buchungen stornieren**
-- Übersichtliche **Kalenderansicht** (07:00–19:00 Uhr)
-- **Automatisches Ausgrauen** vergangener Zeitfenster
-- Persistente Speicherung via **SQL Server & EF Core Code-First**
+- Räume tageweise im 30-Minuten-Takt buchen
+- Konflikterkennung & Validierung bei Buchungen
+- Eigene Buchungen stornieren
+- Übersichtliche Kalenderansicht (07:00–19:00 Uhr)
+- Automatisches Ausgrauen vergangener Zeitfenster
+- Persistente Speicherung via SQL Server & EF Core Code-First
 
 ---
 
