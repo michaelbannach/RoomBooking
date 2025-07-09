@@ -1,22 +1,35 @@
- RoomBookingC
+# RoomBookingC
 
-Web-App zur Raum- und Arbeitsplatzbuchung – entwickelt mit ASP.NET Core, Entity Framework und Docker.
+**Web-App zur Raum- und Arbeitsplatzbuchung**  
+Entwickelt mit ASP.NET Core, Entity Framework Core und Docker.
 
- Funktionen
+---
 
-- Räume tageweise im 30-Minuten-Takt buchen
-- Konflikterkennung & Validierung
-- Eigene Buchungen stornieren
-- Übersichtliche Kalenderansicht (07:00–19:00 Uhr)
-- Automatisches Ausgrauen vergangener Zeiten
-- SQL Server & EF Code-First-Migrations
+## Screenshots
 
-## ️ Tech Stack
+![RoomBooking](Raumbuchung_Übersicht.png)
+![Roombooking](MiniKalendar_Detail.PNG)
+![Roombooking](Buchungsfenster_Detail.png)
 
-- Frontend: HTML, CSS, JavaScript (Vanilla)
-- Backend: ASP.NET Core 8, WebAPI, EF Core
-- DB: SQL Server (Docker)
-- Container: Docker, docker-compose
+## Funktionen
+
+- Räume tageweise im **30-Minuten-Takt** buchen
+- **Konflikterkennung** & Validierung bei Buchungen
+- **Eigene Buchungen stornieren**
+- Übersichtliche **Kalenderansicht** (07:00–19:00 Uhr)
+- **Automatisches Ausgrauen** vergangener Zeitfenster
+- Persistente Speicherung via **SQL Server & EF Core Code-First**
+
+---
+
+##  Tech Stack
+
+- **Frontend:** HTML, CSS, JavaScript (Vanilla)
+- **Backend:** ASP.NET Core 8 (Web API), Entity Framework Core
+- **Datenbank:** SQL Server (Docker-Container)
+- **Containerisierung:** Docker, Docker Compose
+
+---
 
 ##  Setup (lokal)
 
