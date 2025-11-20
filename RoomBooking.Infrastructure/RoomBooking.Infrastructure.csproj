@@ -81,13 +81,15 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Repositories\" />
-      <Folder Include="Service\" />
+      <ProjectReference Include="..\RoomBooking.Application\RoomBooking.Application.csproj" />
+      <ProjectReference Include="..\RoomBooking.Domain\RoomBooking.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\RoomBooking.Application\RoomBooking.Application.csproj" />
-      <ProjectReference Include="..\RoomBooking.Domain\RoomBooking.Domain.csproj" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4">
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        <PrivateAssets>all</PrivateAssets>
+      </PackageReference>
     </ItemGroup>
 
 </Project>
