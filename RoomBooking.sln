@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoomBooking.Domain", "RoomBooking.Domain\RoomBooking.Domain.csproj", "{2D59EF5F-4EA8-47D2-A1D6-8BA69EF0BB0A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoomBooking.Web", "RoomBooking.Web\RoomBooking.Web.csproj", "{4434573F-3458-4AFC-B282-BBDB6CF43DBE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoomBooking.Infrastructure", "RoomBooking.Infrastructure\RoomBooking.Infrastructure.csproj", "{37372A8C-476D-4BF9-810A-9EA32E9030E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoomBooking.Application", "RoomBooking.Application\RoomBooking.Application.csproj", "{AEFB1E70-F612-4A85-8DD8-7A5532FF9324}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2D59EF5F-4EA8-47D2-A1D6-8BA69EF0BB0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D59EF5F-4EA8-47D2-A1D6-8BA69EF0BB0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D59EF5F-4EA8-47D2-A1D6-8BA69EF0BB0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D59EF5F-4EA8-47D2-A1D6-8BA69EF0BB0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4434573F-3458-4AFC-B282-BBDB6CF43DBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4434573F-3458-4AFC-B282-BBDB6CF43DBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4434573F-3458-4AFC-B282-BBDB6CF43DBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4434573F-3458-4AFC-B282-BBDB6CF43DBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37372A8C-476D-4BF9-810A-9EA32E9030E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37372A8C-476D-4BF9-810A-9EA32E9030E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37372A8C-476D-4BF9-810A-9EA32E9030E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37372A8C-476D-4BF9-810A-9EA32E9030E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEFB1E70-F612-4A85-8DD8-7A5532FF9324}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEFB1E70-F612-4A85-8DD8-7A5532FF9324}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEFB1E70-F612-4A85-8DD8-7A5532FF9324}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEFB1E70-F612-4A85-8DD8-7A5532FF9324}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
