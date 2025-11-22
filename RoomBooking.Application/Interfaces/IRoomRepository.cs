@@ -7,11 +7,11 @@ public interface IRoomRepository
 {
     Task<List<Room>> GetAllRoomsAsync();
     
-    Task<Room?> GetRoomByOdAsync(int roomId);
+    Task<Room?> GetRoomByIdAsync(int roomId);
     
     Task<bool> CreateRoomAsync(Room room);
     
     Task<bool> UpdateRoomAsync(Room room);
     
-    Task<bool> DeleteRoomAsync(int roomId);
+    Task<bool> DeleteRoomByIdAsync(int roomId);
 }
