@@ -20,6 +20,8 @@ builder.Services.AddIdentity<Employee, IdentityRole>()
 
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IRoomService, RoomService>();
+builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 
 
 builder.Services.AddEndpointsApiExplorer();
