@@ -74,22 +74,16 @@ public class RoomService  : IRoomService
 
     public async Task<(bool deleted, string? error)> DeleteRoomAsync(Room room)
     {
-        if (room == null)
-        {
-            _logger.LogError("DeleteRoomAsync: Room ist NULL");
-            return(false, "Room ist NULL");
-        }
-        
         if (room.Id <= 0)
         {
-            _logger.LogWarning("DeleteRoomByIdAsync: Ungültige Room ID");
-            return(false, "Room ist NULL");
+            _logger.LogWarning("DeleteRoomByIdAsync: Ungültige Room ID {RoomId}", room.Id);
+            return (false, "Ungültige Room ID");
         }
-        
+
         var deleted = await _roomRepository.DeleteRoomByIdAsync(room.Id);
         if (!deleted)
         {
-            _logger.LogError("DeleteRoomByIdAsync: Fehler beim Löschen des Raums mit der Id {RoomId}",  nameof(room.Id));
+            _logger.LogError("DeleteRoomByIdAsync: Fehler beim Löschen des Raums mit der Id {RoomId}", room.Id);
             return (false, "Fehler beim Löschen des Raums");
         }
         return (true, null);
