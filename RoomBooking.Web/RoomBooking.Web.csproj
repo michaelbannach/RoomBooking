@@ -81,10 +81,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\RoomBooking.Application\RoomBooking.Application.csproj" />
       <ProjectReference Include="..\RoomBooking.Domain\RoomBooking.Domain.csproj" />
       <ProjectReference Include="..\RoomBooking.Infrastructure\RoomBooking.Infrastructure.csproj" />
@@ -95,6 +91,7 @@
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         <PrivateAssets>all</PrivateAssets>
       </PackageReference>
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="10.0.1" />
     </ItemGroup>
 
 </Project>
