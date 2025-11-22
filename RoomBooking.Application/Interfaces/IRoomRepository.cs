@@ -9,7 +9,7 @@ public interface IRoomRepository
     
     Task<Room?> GetRoomByIdAsync(int roomId);
     
-    Task<bool> CreateRoomAsync(Room room);
+    Task<bool> AddRoomAsync(Room room);
     
     Task<bool> UpdateRoomAsync(Room room);
     

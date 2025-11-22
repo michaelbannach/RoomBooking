@@ -12,5 +12,5 @@ public interface IRoomService
 
     Task<(bool updated, string? error)> UpdateRoomAsync(Room room);
 
-    Task<(bool deleted, string? error)> DeleteRoomByIdAsync(int roomId);
+    Task<(bool deleted, string? error)> DeleteRoomAsync(Room room);
 }
