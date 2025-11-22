@@ -45,7 +45,7 @@ public class BookingService : IBookingService
             return (false,  "StartTime in der Vergangenheit");
         }
 
-        if (booking.EndDate <= DateTime.Now)
+        if (booking.EndDate <= booking.StartDate)
         {
             _logger.LogWarning("AddBookingAsync: EndTime darf nicht vor oder gleich StartTime sein");
             return (false,  "EndTime früher oder gleich StartTime");
@@ -104,6 +104,11 @@ public class BookingService : IBookingService
             return (false, "Startzeit muss vor Endzeit liegen.");
         }
 
+        if (booking.StartDate < DateTime.Now)
+        {
+            _logger.LogWarning("UpdaateBookingAsync: StartTime ist in der Vergangenheit");
+            return (false, "StartTime in der Vergangenheit");
+        }
         
         var bookingsInRoom = await _bookingRepository.GetBookingsByRoomIdAsync(booking.RoomId);
         bool overlaps = bookingsInRoom.Any(b =>

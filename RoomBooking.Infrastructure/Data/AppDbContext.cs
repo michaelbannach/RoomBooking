@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 using RoomBooking.Domain.Models;
+using RoomBooking.Infrastructure.Configuration;
 
 namespace RoomBooking.Infrastructure.Data;
 
@@ -19,7 +20,10 @@ public class AppDbContext : IdentityDbContext<Employee>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        
+        builder.ApplyConfiguration(new BookingConfiguration());
+        builder.ApplyConfiguration(new EmployeeConfiguration());
+        builder.ApplyConfiguration(new RoomConfiguration());
+
     }
     
 }

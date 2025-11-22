@@ -16,10 +16,10 @@ public class Booking
     public string EmployeeId { get; set; }
     
     
-    public Employee Employee { get; set; }
+    public Employee? Employee { get; set; }
     
-    [Required]
+   [Required]
    public int RoomId { get; set; }
     
-    public Room Room { get; set; }
+    public Room? Room { get; set; }
 }
