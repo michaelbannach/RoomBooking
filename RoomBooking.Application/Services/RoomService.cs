@@ -37,7 +37,7 @@ public class RoomService  : IRoomService
             return(false, "Room ist NULL");
         }
         
-        var exists = await _roomRepository.RoomExistsAsync(room.Name);
+        var exists = await _roomRepository.RoomExistsAsync(room.Name, room.Id);
         if (exists)
         {
             _logger.LogError("AddRoomAsync: Raumname bereits vergeben");
@@ -82,7 +82,7 @@ public class RoomService  : IRoomService
             return(false, "Capacity darf nicht kleiner gleich null sein");
         }
         
-        var exists = await _roomRepository.RoomExistsAsync(room.Name);
+        var exists = await _roomRepository.RoomExistsAsync(room.Name, room.Id);
         if (exists)
         {
             _logger.LogError("UpdateRoomAsync: Raumname bereits vergeben");

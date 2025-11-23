@@ -7,7 +7,7 @@
 
 ## Beispiel: Neue Buchung (Booking) anlegen
 
-### Anfrage (Post /api/Booking)
+### Anfrage (POST /api/Booking)
 
 ```
 {
@@ -24,7 +24,7 @@ Status: `200 OK` (Buchung wurde erfolgreich angelegt)
 
 ## Fehlerfall: Buchung besteht bereits
 
-### Anfrage (Post /api/Booking)
+### Anfrage (POST /api/Booking)
 
 ```
 {
@@ -41,7 +41,7 @@ Status: `400 Bad Request` (Buchung besteht bereits)
 
 ## Fehlerfall: EndTime der Buchung vor StartTime
 
-### Anfrage (Post /api/Booking)
+### Anfrage (POST /api/Booking)
 
 ```
 {
@@ -58,7 +58,7 @@ Status: `400 Bad Request` (EndTime früher oder gleich StartTime)
 
 ## Fehlerfall: Buchungen überschneiden sich
 
-### Anfrage (Post /api/Booking)
+### Anfrage (POST /api/Booking)
 
 ```
 {
@@ -78,7 +78,7 @@ Status: `400 Bad Request` (Buchung besteht berreits)
 
 ## Fehlerfall: EndTime identisch mit StarTime der Buchung
 
-### Anfrage (Post /api/Booking)
+### Anfrage (POST /api/Booking)
 
 ```
 {
@@ -95,7 +95,7 @@ Status: `400 Bad Request` (EndTime früher oder gleich StartTime)
 
 ## Fehlerfall: StarTime in der Vergangenheit (Requestdatum: 22.11.25)
 
-### Anfrage (Post /api/Booking)
+### Anfrage (POST /api/Booking)
 
 ```
 {

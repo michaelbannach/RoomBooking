@@ -6,7 +6,7 @@ using RoomBooking.Infrastructure.Data;
 
 namespace RoomBooking.Infrastructure.Repositories;
 
-public class RoomRepository  : IRoomRepository
+public class RoomRepository : IRoomRepository
 {
     private readonly AppDbContext _context;
 
@@ -34,12 +34,12 @@ public class RoomRepository  : IRoomRepository
     public async Task<bool> UpdateRoomAsync(Room room)
     {
         var existing = await _context.Rooms.FindAsync(room.Id);
-        if(existing == null)
+        if (existing == null)
             return false;
 
         existing.Name = room.Name;
         existing.Capacity = room.Capacity;
-        
+
         await _context.SaveChangesAsync();
         return true;
     }
@@ -47,13 +47,16 @@ public class RoomRepository  : IRoomRepository
     public async Task<bool> DeleteRoomByIdAsync(int roomId)
     {
         var room = await _context.Rooms.FindAsync(roomId);
-        if(room == null) return false;
+        if (room == null) return false;
         _context.Rooms.Remove(room);
         return await _context.SaveChangesAsync() > 0;
     }
 
-    public Task<bool> RoomExistsAsync(string name) =>
-    
-        _context.Rooms.AnyAsync(r => r.Name == name);
-    
+    public async Task<bool> RoomExistsAsync(string name, int excludeId)
+
+    {
+        return await _context.Rooms
+            .AnyAsync(r => r.Name == name && r.Id != excludeId);
+
+    }
 }

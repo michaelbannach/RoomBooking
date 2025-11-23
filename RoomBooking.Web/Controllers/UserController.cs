@@ -18,6 +18,13 @@ public class UserController : ControllerBase
         _userManager = userManager;
     }
 
+    [HttpGet]
+    public async Task<ActionResult<List<Employee>>> GetAll()
+    {
+        var employees = _userManager.Users.ToList();
+        return Ok(employees);
+    }
+
     [HttpGet("{employeeId}")]
     public async Task<ActionResult<Employee>> GetEmployeeById(string employeeId)
     {

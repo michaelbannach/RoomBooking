@@ -29,7 +29,11 @@ public static class DevelopmentSeeder
                 UserName = "testuser",
                 Email = "testuser@test.com",
                 EmailConfirmed = true,
+                FirstName = "Test",
+                LastName = "User",
+                PhoneNumber = "00000000"
             };
+            
             var result = await userManager.CreateAsync(user, "Test123!");
             if (!result.Succeeded)
             {
