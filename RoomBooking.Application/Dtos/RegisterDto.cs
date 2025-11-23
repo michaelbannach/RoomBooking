@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace RoomBooking.Application.Dtos;
 
-public class RegisterDto
+public record RegisterDto
 {
     [Required]
     [MaxLength(50)]
