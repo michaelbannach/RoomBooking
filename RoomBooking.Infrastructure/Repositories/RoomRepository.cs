@@ -51,4 +51,9 @@ public class RoomRepository  : IRoomRepository
         _context.Rooms.Remove(room);
         return await _context.SaveChangesAsync() > 0;
     }
+
+    public Task<bool> RoomExistsAsync(string name) =>
+    
+        _context.Rooms.AnyAsync(r => r.Name == name);
+    
 }

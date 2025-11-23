@@ -14,4 +14,6 @@ public interface IRoomRepository
     Task<bool> UpdateRoomAsync(Room room);
     
     Task<bool> DeleteRoomByIdAsync(int roomId);
+    
+    Task<bool> RoomExistsAsync(string name);
 }

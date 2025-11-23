@@ -37,6 +37,19 @@ public class RoomService  : IRoomService
             return(false, "Room ist NULL");
         }
         
+        var exists = await _roomRepository.RoomExistsAsync(room.Name);
+        if (exists)
+        {
+            _logger.LogError("AddRoomAsync: Raumname bereits vergeben");
+            return(false, "Raumname ist bereits vergeben");
+        }
+
+        if (room.Capacity <= 0)
+        {
+            _logger.LogError("AddRoomAsync: Capacity darf nicht kleiner gleich null sein");
+            return(false, "Capacity darf nicht kleiner gleich null sein");
+        }
+        
         var ok = await _roomRepository.AddRoomAsync(room);
         if (!ok)
         {
@@ -45,7 +58,8 @@ public class RoomService  : IRoomService
         }
 
         return (true, null);
-        
+     
+     
     }
 
     public async Task<(bool updated, string? error)> UpdateRoomAsync(Room room)
@@ -60,6 +74,19 @@ public class RoomService  : IRoomService
         {
             _logger.LogWarning("UpdateRoomAsync: Ungültige Room ID {RoomId}", room.Id);
             return (false, "Ungültige Room ID");
+        }
+
+        if (room.Capacity <= 0)
+        {
+            _logger.LogError("AddRoomAsync: Capacity darf nicht kleiner gleich null sein");
+            return(false, "Capacity darf nicht kleiner gleich null sein");
+        }
+        
+        var exists = await _roomRepository.RoomExistsAsync(room.Name);
+        if (exists)
+        {
+            _logger.LogError("UpdateRoomAsync: Raumname bereits vergeben");
+            return(false, "Raumname ist bereits vergeben");
         }
        
         var result = await _roomRepository.UpdateRoomAsync(room);
@@ -88,4 +115,6 @@ public class RoomService  : IRoomService
         }
         return (true, null);
     }
+    
+    
 }

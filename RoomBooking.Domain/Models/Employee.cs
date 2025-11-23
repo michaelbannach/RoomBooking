@@ -13,13 +13,5 @@ public class Employee : IdentityUser
     [MaxLength(50)]
     public string LastName { get; set; } = string.Empty;
     
-    [Required]
-    [MaxLength(50)]
-    public string Email { get; set; } = string.Empty;
-    
-    [Required]
-    [MaxLength(20)]
-    public string PhoneNumber { get; set; } = string.Empty;
-    
    
 }
