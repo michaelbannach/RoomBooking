@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 using RoomBooking.Domain.Models;
 using RoomBooking.Application.Dtos;
@@ -21,7 +22,7 @@ public class UserController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<Employee>>> GetAll()
     {
-        var employees = _userManager.Users.ToList();
+        var employees = await _userManager.Users.ToListAsync();
         return Ok(employees);
     }
 
