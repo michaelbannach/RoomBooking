@@ -6,7 +6,7 @@ public interface IBookingService
 {
     Task<List<Booking>> GetAllBookingsAsync();
     
-    Task<Booking> GetBookingByIdAsync(int bookingid);
+    Task<Booking?> GetBookingByIdAsync(int bookingid);
     
     Task<(bool added, string? error)> AddBookingAsync(string employeeId, Booking booking);
     

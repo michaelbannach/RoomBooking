@@ -23,7 +23,7 @@ public class RoomService  : IRoomService
     {
         if (roomId <= 0)
         {
-            _logger.LogError("GetRoomByIdAsync: Ungültige Room ID {RoomId}", roomId);
+            _logger.LogWarning("GetRoomByIdAsync: Ungültige Room ID {RoomId}", roomId);
             throw new ArgumentException("Room Id must be greater than zero");
         }
         return await _roomRepository.GetRoomByIdAsync(roomId);
@@ -40,13 +40,13 @@ public class RoomService  : IRoomService
         var exists = await _roomRepository.RoomExistsAsync(room.Name, room.Id);
         if (exists)
         {
-            _logger.LogError("AddRoomAsync: Raumname bereits vergeben");
+            _logger.LogWarning("AddRoomAsync: Raumname bereits vergeben");
             return(false, "Raumname ist bereits vergeben");
         }
 
         if (room.Capacity <= 0)
         {
-            _logger.LogError("AddRoomAsync: Capacity darf nicht kleiner gleich null sein");
+            _logger.LogWarning("AddRoomAsync: Capacity darf nicht kleiner gleich null sein");
             return(false, "Capacity darf nicht kleiner gleich null sein");
         }
         
@@ -66,7 +66,7 @@ public class RoomService  : IRoomService
     {
         if (room == null)
         {
-            _logger.LogError("UpdateRoomAsync: Room ist NULL");
+            _logger.LogWarning("UpdateRoomAsync: Room ist NULL");
             return (false, "Room darf nicht NULL sein");
         }
         
@@ -78,14 +78,14 @@ public class RoomService  : IRoomService
 
         if (room.Capacity <= 0)
         {
-            _logger.LogError("AddRoomAsync: Capacity darf nicht kleiner gleich null sein");
+            _logger.LogWarning("AddRoomAsync: Capacity darf nicht kleiner gleich null sein");
             return(false, "Capacity darf nicht kleiner gleich null sein");
         }
         
         var exists = await _roomRepository.RoomExistsAsync(room.Name, room.Id);
         if (exists)
         {
-            _logger.LogError("UpdateRoomAsync: Raumname bereits vergeben");
+            _logger.LogWarning("UpdateRoomAsync: Raumname bereits vergeben");
             return(false, "Raumname ist bereits vergeben");
         }
        

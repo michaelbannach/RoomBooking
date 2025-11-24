@@ -20,11 +20,11 @@ public class BookingService : IBookingService
         return await _bookingRepository.GetAllBookingsAsync();
     }
 
-    public async Task<Booking> GetBookingByIdAsync(int bookingId)
+    public async Task<Booking?> GetBookingByIdAsync(int bookingId)
     {
         if (bookingId <= 0)
         {
-            _logger.LogError("Booking Id must be greater than zero.");
+            _logger.LogWarning("Booking Id must be greater than zero.");
             throw new ArgumentException("Booking Id must be greater than zero.", nameof(bookingId));
         }
 
@@ -39,7 +39,7 @@ public class BookingService : IBookingService
             return (false, "Unbekannter Benutzer");
         }
 
-        if (booking.StartDate < DateTime.Now)
+        if (booking.StartDate < DateTime.UtcNow)
         {
             _logger.LogWarning("AddBookingAsync: StartTime darf nicht in der Vergangenheit liegen");
             return (false,  "StartTime in der Vergangenheit");
@@ -51,13 +51,7 @@ public class BookingService : IBookingService
             return (false,  "EndTime früher oder gleich StartTime");
         }
         
-        var existingBooking = await _bookingRepository.AlreadyExistsAsync(booking.Id);
-        if (existingBooking)
-        {
-            _logger.LogWarning("AddBookingAsync: Buchung besteht bereits");
-            return (false, "Buchung besteht bereits");
-        }
-        
+    
         var bookingsInRoom = await _bookingRepository.GetBookingsByRoomIdAsync(booking.RoomId);
         bool overlaps = bookingsInRoom.Any(b =>
             b.StartDate < booking.EndDate && b.EndDate > booking.StartDate);
@@ -81,13 +75,13 @@ public class BookingService : IBookingService
     {
         if (booking == null)
         {
-            _logger.LogError("UpdateBookingAsync: Booking ist null");
+            _logger.LogWarning("UpdateBookingAsync: Booking ist null");
             return (false, "Booking darf nicht null sein.");
         }
 
         if (booking.Id <= 0)
         {
-            _logger.LogError("UpdateBookingAsync: Ungültige Booking-Id: {Id}", booking.Id);
+            _logger.LogWarning("UpdateBookingAsync: Ungültige Booking-Id: {Id}", booking.Id);
             return (false, "Ungültige Booking-Id.");
         }
 
@@ -135,7 +129,7 @@ public class BookingService : IBookingService
     {
         if (booking == null)
         {
-            _logger.LogError("DeleteBookingAsync: Booking ist null");
+            _logger.LogWarning("DeleteBookingAsync: Booking ist null");
             return (false, "Booking darf nicht null sein.");
         }
 

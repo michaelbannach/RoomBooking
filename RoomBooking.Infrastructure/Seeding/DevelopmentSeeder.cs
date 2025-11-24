@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
+
 using RoomBooking.Domain.Models;
 using RoomBooking.Infrastructure.Data;
 
@@ -9,20 +12,30 @@ public static class DevelopmentSeeder
     public static async Task SeedAsync(IServiceProvider services)
     {
         using var scope = services.CreateScope();
+
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Employee>>();
 
-        // Room seeden
-        if (!db.Rooms.Any())
+        // ROOM seeden
+        if (!await db.Rooms.AnyAsync())
         {
-            db.Rooms.Add(new Room { Name = "Raum 1", Capacity = 12 });
-            db.SaveChanges();
-        }
-        var roomId = db.Rooms.First().Id;
+            await db.Rooms.AddAsync(new Room
+            {
+                Name = "Raum 1",
+                Capacity = 12
+            });
 
-        // User seeden
+            await db.SaveChangesAsync();
+        }
+
+        var roomId = await db.Rooms
+            .Select(r => r.Id)
+            .FirstAsync();
+
+        // USER seeden
         Employee user;
-        if (!userManager.Users.Any())
+
+        if (!await userManager.Users.AnyAsync())
         {
             user = new Employee
             {
@@ -31,33 +44,36 @@ public static class DevelopmentSeeder
                 EmailConfirmed = true,
                 FirstName = "Test",
                 LastName = "User",
-                PhoneNumber = "00000000"
+                PhoneNumber = "0000000000"
             };
-            
+
             var result = await userManager.CreateAsync(user, "Test123!");
+
             if (!result.Succeeded)
             {
-                // Fehlerbehandlung zur Not hier ergänzen
-                throw new Exception("User konnte nicht angelegt werden: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+                throw new Exception("User konnte nicht angelegt werden: " +
+                                    string.Join(", ", result.Errors.Select(e => e.Description)));
             }
         }
         else
         {
-            user = userManager.Users.First();
+            user = await userManager.Users.FirstAsync();
         }
+
         var employeeId = user.Id;
 
-        // Booking seeden (nur wenn noch keine existiert)
-        if (!db.Bookings.Any())
+        // BOOKING seeden
+        if (!await db.Bookings.AnyAsync())
         {
-            db.Bookings.Add(new Booking
+            await db.Bookings.AddAsync(new Booking
             {
                 StartDate = DateTime.Today.AddHours(10),
                 EndDate = DateTime.Today.AddHours(12),
                 EmployeeId = employeeId,
                 RoomId = roomId
             });
-            db.SaveChanges();
+
+            await db.SaveChangesAsync();
         }
     }
 }
