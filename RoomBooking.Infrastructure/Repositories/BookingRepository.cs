@@ -53,7 +53,7 @@ namespace RoomBooking.Infrastructure.Repositories
             existing.RoomId = booking.RoomId;
             existing.StartDate = booking.StartDate;
             existing.EndDate = booking.EndDate;
-            existing.EmployeeId = booking.EmployeeId;
+            existing.UserId = booking.UserId;
             
             await _context.SaveChangesAsync();
             return true;

@@ -3,17 +3,18 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 using RoomBooking.Domain.Models;
 using RoomBooking.Infrastructure.Configuration;
+using RoomBooking.Infrastructure.Models;
 
 namespace RoomBooking.Infrastructure.Data;
 
-public class AppDbContext : IdentityDbContext<Employee>
+public class AppDbContext : IdentityDbContext<ApplicationUser>
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
         
     }
     
-    public DbSet<Employee> Employees => Set<Employee>();
+    public DbSet<User> Users => Set<User>();
     public DbSet<Room> Rooms => Set<Room>();
     public DbSet<Booking> Bookings => Set<Booking>();
 
@@ -21,7 +22,7 @@ public class AppDbContext : IdentityDbContext<Employee>
     {
         base.OnModelCreating(builder);
         builder.ApplyConfiguration(new BookingConfiguration());
-        builder.ApplyConfiguration(new EmployeeConfiguration());
+        builder.ApplyConfiguration(new UserConfiguration());
         builder.ApplyConfiguration(new RoomConfiguration());
 
     }

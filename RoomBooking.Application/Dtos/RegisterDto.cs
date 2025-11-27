@@ -7,8 +7,11 @@ public record RegisterDto
     [Required]
     [MaxLength(50)]
     [EmailAddress]
-    public string Email { get; set; }
+    public string Email { get; set; } = null!;
+
+    [Required] public string Password { get; set; } = null!;
+
+    public string FirstName { get; set; } = null!;
     
-    [Required]
-    public string Password { get; set; }
+    public string LastName { get; set; } = null!;
 }

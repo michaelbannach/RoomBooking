@@ -1,10 +1,15 @@
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Identity;
+
 
 namespace RoomBooking.Domain.Models;
 
-public class Employee : IdentityUser
+public class User 
 {
+    public int Id { get; set; }
+    
+    [Required]
+    public string IdentityUserId { get; set; } = null!;
+   
     [Required]
     [MaxLength(50)]
     public string FirstName { get; set; } = string.Empty;
@@ -12,6 +17,4 @@ public class Employee : IdentityUser
     [Required]
     [MaxLength(50)]
     public string LastName { get; set; } = string.Empty;
-    
-   
 }

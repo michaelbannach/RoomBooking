@@ -1,22 +1,35 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-
-
-using RoomBooking.Domain.Models;
 using RoomBooking.Infrastructure.Data;
+using RoomBooking.Infrastructure.Models;
+using RoomBooking.Domain.Models;
 
 namespace RoomBooking.Infrastructure.Seeding;
 
 public static class DevelopmentSeeder
 {
+    // <<< NEU: Guard gegen mehrfaches Seeding >>>
+    private static bool _initialized;
+    private static readonly object _lock = new();
+
     public static async Task SeedAsync(IServiceProvider services)
     {
+        // --- Doppeltes/Paralleles Seeding verhindern ---
+        if (_initialized) return;
+        lock (_lock)
+        {
+            if (_initialized) return;
+            _initialized = true;
+        }
+        // ----------------------------------------------
+
         using var scope = services.CreateScope();
 
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Employee>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-        // ROOM seeden
+        // 1) ROOM seeden
         if (!await db.Rooms.AnyAsync())
         {
             await db.Rooms.AddAsync(new Room
@@ -32,44 +45,85 @@ public static class DevelopmentSeeder
             .Select(r => r.Id)
             .FirstAsync();
 
-        // USER seeden
-        Employee user;
+        // 2) APPLICATIONUSER seeden
+        const string userName = "seed_admin";          // wichtig: passt zu deinem Fehler-Log
+        const string email    = "seed_admin@test.local";
+        const string password = "Test123!";
 
-        if (!await userManager.Users.AnyAsync())
+        var existingIdentityUser =
+            await userManager.FindByNameAsync(userName)
+            ?? await userManager.FindByEmailAsync(email);
+
+        if (existingIdentityUser == null)
         {
-            user = new Employee
+            var user = new ApplicationUser
             {
-                UserName = "testuser",
-                Email = "testuser@test.com",
+                UserName = userName,
+                Email = email,
                 EmailConfirmed = true,
-                FirstName = "Test",
-                LastName = "User",
                 PhoneNumber = "0000000000"
             };
 
-            var result = await userManager.CreateAsync(user, "Test123!");
-
-            if (!result.Succeeded)
+            try
             {
-                throw new Exception("User konnte nicht angelegt werden: " +
-                                    string.Join(", ", result.Errors.Select(e => e.Description)));
+                var result = await userManager.CreateAsync(user, password);
+
+                if (result.Succeeded)
+                {
+                    existingIdentityUser = user;
+                }
+                else if (result.Errors.Any(e =>
+                             e.Code == "DuplicateUserName" ||
+                             e.Code == "DuplicateEmail"))
+                {
+                    // Falls trotzdem jemand "schneller" war
+                    existingIdentityUser =
+                        await userManager.FindByNameAsync(userName)
+                        ?? await userManager.FindByEmailAsync(email);
+                }
+                else
+                {
+                    throw new Exception(
+                        "ApplicationUser konnte nicht angelegt werden: " +
+                        string.Join(", ", result.Errors.Select(e => e.Description)));
+                }
+            }
+            catch (DbUpdateException ex) when (
+                ex.InnerException is SqlException sqlEx &&
+                sqlEx.Message.Contains("UserNameIndex", StringComparison.OrdinalIgnoreCase))
+            {
+                // Unique-Constraint ausgelöst → User einfach laden
+                existingIdentityUser =
+                    await userManager.FindByNameAsync(userName)
+                    ?? await userManager.FindByEmailAsync(email);
             }
         }
-        else
+
+        // 3) DOMAIN-USER seeden (Users-Tabelle)
+        var existingDomainUser = await db.Users
+            .FirstOrDefaultAsync(u => u.IdentityUserId == existingIdentityUser!.Id);
+
+        if (existingDomainUser == null)
         {
-            user = await userManager.Users.FirstAsync();
+            existingDomainUser = new User
+            {
+                IdentityUserId = existingIdentityUser.Id,
+                FirstName = "Test",
+                LastName = "User"
+            };
+
+            db.Users.Add(existingDomainUser);
+            await db.SaveChangesAsync();
         }
 
-        var employeeId = user.Id;
-
-        // BOOKING seeden
+        // 4) BOOKING seeden
         if (!await db.Bookings.AnyAsync())
         {
             await db.Bookings.AddAsync(new Booking
             {
                 StartDate = DateTime.Today.AddHours(10),
                 EndDate = DateTime.Today.AddHours(12),
-                EmployeeId = employeeId,
+                UserId = existingDomainUser.Id,
                 RoomId = roomId
             });
 

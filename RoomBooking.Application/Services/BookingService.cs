@@ -31,9 +31,9 @@ public class BookingService : IBookingService
         return await _bookingRepository.GetBookingByIdAsync(bookingId);
     }
 
-    public async Task<(bool added, string? error)> AddBookingAsync(string employeeId, Booking booking)
+    public async Task<(bool added, string? error)> AddBookingAsync(int userId, Booking booking)
     {
-        if (string.IsNullOrWhiteSpace(employeeId))
+        if (userId <= 0)
         {
             _logger.LogWarning("AddBookingAsync: unbekannter Benutzer");
             return (false, "Unbekannter Benutzer");
@@ -139,13 +139,13 @@ public class BookingService : IBookingService
             return(false,"Ungültige Booking-Id.");
         }
 
-        if (string.IsNullOrWhiteSpace(booking.EmployeeId))
+        if (booking.UserId <= 0)
         {
             _logger.LogWarning("DeleteBookingAsync: Leere Employee ID");
-            return(false,"Leere Employee ID");
+            return(false,"Leere User ID");
         }
         
-        _logger.LogInformation("Lösche Booking mit Id {BookingId} für User {EmployeeId}", booking.Id, booking.EmployeeId);
+        _logger.LogInformation("Lösche Booking mit Id {BookingId} für User {UserId}", booking.Id, booking.UserId);
 
         var deleted = await _bookingRepository.DeleteBookingByIdAsync(booking.Id);
         if (!deleted)

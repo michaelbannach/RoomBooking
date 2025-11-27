@@ -1,31 +1,19 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using RoomBooking.Application.Dtos;
-using RoomBooking.Domain.Models;
+using RoomBooking.Application.Interfaces;
 
 namespace RoomBooking.Web.Controllers;
 
 [ApiController]
-[Route("api/auth")]
+[Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly SignInManager<Employee> _signInManager;
-    private readonly UserManager<Employee> _userManager;
-    private readonly IConfiguration _configuration;
+    private readonly IAuthService _authService;
 
-    public AuthController(
-        SignInManager<Employee> signInManager,
-        UserManager<Employee> userManager,
-        IConfiguration configuration)
+    public AuthController(IAuthService authService)
     {
-        _signInManager = signInManager;
-        _userManager = userManager;
-        _configuration = configuration;
+        _authService = authService;
     }
 
     [HttpPost("login")]
@@ -35,60 +23,38 @@ public class AuthController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var user = await _userManager.FindByEmailAsync(dto.Email);
-        if (user == null)
-            return Unauthorized("Ungültige E-Mail oder Passwort");
+        var (success, error) = await _authService.LoginAsync(dto);
+        if (!success)
+            return Unauthorized(new { error });
 
-        var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, lockoutOnFailure: false);
-        if (!result.Succeeded)
-            return Unauthorized("Ungültige E-Mail oder Passwort");
+        // später: JWT im Response zurückgeben
+        return Ok(new { Message = "Login ok" });
+    }
 
-        var token = GenerateJwtToken(user);
+    [HttpPost("register")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+    {
+        if (!ModelState.IsValid)
+            return ValidationProblem(ModelState);
+
+        var (success, error, appUserId, userId) = await _authService.RegisterAsync(dto);
+        if (!success)
+            return BadRequest(new { error });
 
         return Ok(new
         {
-            token,
-            userId = user.Id,
-            email = user.Email,
-            expires = DateTime.UtcNow.AddMinutes(
-                int.Parse(_configuration["Jwt:ExpiresInMinutes"] ?? "60"))
+            appUserId,
+            userId,
+            email = dto.Email
         });
     }
 
     [HttpPost("logout")]
     [Authorize]
-    public IActionResult Logout()
+    public async Task<IActionResult> Logout()
     {
-        
-        return Ok("Logged Out");
-    }
-
-    private string GenerateJwtToken(Employee user)
-    {
-        var jwtSection = _configuration.GetSection("Jwt");
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection["Key"]!));
-
-        var claims = new List<Claim>
-        {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
-            new Claim(ClaimTypes.NameIdentifier, user.Id),
-            new Claim(ClaimTypes.Name, user.UserName ?? user.Email ?? string.Empty)
-        };
-
-        
-
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: jwtSection["Issuer"],
-            audience: jwtSection["Audience"],
-            claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(
-                int.Parse(jwtSection["ExpiresInMinutes"] ?? "60")),
-            signingCredentials: creds
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        await _authService.LogoutAsync();
+        return Ok(new { Message = "Logout ok" });
     }
 }

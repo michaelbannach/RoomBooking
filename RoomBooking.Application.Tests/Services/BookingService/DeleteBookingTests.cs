@@ -1,7 +1,4 @@
-using System.Threading.Tasks;
 using Moq;
-using RoomBooking.Domain.Models;
-using Xunit;
 
 namespace RoomBooking.Application.Tests.Services.BookingService;
 
@@ -31,15 +28,15 @@ public class BookingService_DeleteBookingTests : BookingServiceTestBase
     }
 
     [Fact]
-    public async Task DeleteBookingAsync_ReturnsError_WhenEmployeeIdIsEmpty()
+    public async Task DeleteBookingAsync_ReturnsError_WhenUserIdIsEmpty()
     {
         var booking = CreateValidBooking();
-        booking.EmployeeId = "   ";
+        booking.UserId = 0;
 
         var (deleted, error) = await Sut.DeleteBookingAsync(booking);
 
         Assert.False(deleted);
-        Assert.Equal("Leere Employee ID", error);
+        Assert.Equal("Leere User ID", error);
         RepoMock.Verify(r => r.DeleteBookingByIdAsync(It.IsAny<int>()), Times.Never);
     }
 

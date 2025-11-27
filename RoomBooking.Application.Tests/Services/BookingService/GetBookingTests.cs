@@ -1,7 +1,3 @@
-using System;
-using System.Threading.Tasks;
-using Xunit;
-
 namespace RoomBooking.Application.Tests.Services.BookingService;
 
 public class BookingService_GetBookingTests : BookingServiceTestBase

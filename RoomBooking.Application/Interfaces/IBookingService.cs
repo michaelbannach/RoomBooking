@@ -8,7 +8,7 @@ public interface IBookingService
     
     Task<Booking?> GetBookingByIdAsync(int bookingid);
     
-    Task<(bool added, string? error)> AddBookingAsync(string employeeId, Booking booking);
+    Task<(bool added, string? error)> AddBookingAsync(int userId, Booking booking);
     
     Task<(bool updated, string? error)> UpdateBookingAsync(Booking booking);
     

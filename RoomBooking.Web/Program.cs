@@ -2,13 +2,13 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
+using RoomBooking.Infrastructure.Services;
 using RoomBooking.Application.Services;
 using RoomBooking.Application.Interfaces;
-using RoomBooking.Domain.Models;
 using RoomBooking.Infrastructure.Data;
+using RoomBooking.Infrastructure.Models;
 using RoomBooking.Infrastructure.Repositories;
 using RoomBooking.Infrastructure.Seeding;
 
@@ -20,7 +20,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddIdentity<Employee, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
@@ -46,12 +46,16 @@ builder.Services.AddAuthentication(options =>
     };
 });
     
-    
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();    
 
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 
 builder.Services.AddEndpointsApiExplorer();

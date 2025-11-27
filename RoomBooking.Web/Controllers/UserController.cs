@@ -1,57 +1,39 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
+using RoomBooking.Application.Interfaces;
 using RoomBooking.Domain.Models;
-using RoomBooking.Application.Dtos;
 
 namespace RoomBooking.Web.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize] 
 public class UserController : ControllerBase
 {
-    private readonly UserManager<Employee> _userManager;
+    private readonly IUserService _userService;
 
-    public UserController(UserManager<Employee> userManager)
+    public UserController(IUserService userService)
     {
-        _userManager = userManager;
+        _userService = userService;
     }
 
+    
     [HttpGet]
-    public async Task<ActionResult<List<Employee>>> GetAll()
+    [AllowAnonymous]
+    
+    public async Task<ActionResult<List<User>>> GetAll()
     {
-        var employees = await _userManager.Users.ToListAsync();
-        return Ok(employees);
+        var users = await _userService.GetAllUsersAsync();
+        return Ok(users);
     }
 
-    [HttpGet("{employeeId}")]
-    public async Task<ActionResult<Employee>> GetEmployeeById(string employeeId)
+    
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<User>> GetUserById(int id)
     {
-        var user = await _userManager.FindByIdAsync(employeeId);
-        if(user == null) return NotFound();
+        var user = await _userService.GetUserByIdAsync(id);
+        if (user == null) return NotFound();
         return Ok(user);
     }
-
-    [HttpPost("register")]
-    [AllowAnonymous]
-
-    public async Task<IActionResult> Register([FromBody] RegisterDto dto)
-    {
-        var user = new Employee
-        {
-            UserName = dto.Email,
-            Email = dto.Email,
-        };
-        
-        var result = await _userManager.CreateAsync(user, dto.Password);
-        if(!result.Succeeded) 
-            return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
-        
-        return Ok("Employee registered");
-    }
-
-   
 }
-

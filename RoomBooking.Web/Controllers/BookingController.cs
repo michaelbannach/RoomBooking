@@ -27,62 +27,53 @@ public class BookingController : ControllerBase
     public async Task<ActionResult<Booking>> GetBookingById(int id)
     {
         var result = await _bookingService.GetBookingByIdAsync(id);
-        if(result == null)
+        if (result == null)
             return NotFound();
         return Ok(result);
     }
 
     [HttpPost]
-    public async Task<ActionResult<Booking>> AddBooking([FromBody] Booking booking)
+    public async Task<IActionResult> AddBooking([FromBody] Booking booking)
     {
-        if(booking == null || string.IsNullOrWhiteSpace(booking.EmployeeId))
-            return BadRequest("Employee ID ist erforderlich");
-        
-        var (added, error) = await 
-            _bookingService.AddBookingAsync(booking.EmployeeId, booking);
-        if(!added)
+        if (booking == null)
+            return BadRequest("Booking darf nicht null sein.");
+
+        // Businessregeln (Zeiten, Overlaps, usw.) sind im BookingService
+        var (added, error) = await _bookingService.AddBookingAsync(booking.UserId, booking);
+        if (!added)
             return BadRequest(error);
 
-        return Ok();
+        return Ok(booking);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<Booking>> UpdateBooking(int id, [FromBody] Booking booking)
+    public async Task<IActionResult> UpdateBooking(int id, [FromBody] Booking booking)
     {
-        if (booking.EndDate <= booking.StartDate)
-        {
-            return BadRequest("EndTime ist vor StartTime");
-        }
-
-        if (booking.StartDate < DateTime.Now)
-        {
-            return BadRequest("StartTime ist in der Vergangenheit");
-        }
-        
-        if(booking == null || id != booking.Id)
+        if (booking == null || id != booking.Id)
             return BadRequest("Booking ID ist null oder Id stimmt nicht überein");
 
         var (updated, error) = await _bookingService.UpdateBookingAsync(booking);
-        if(!updated)
+        if (!updated)
             return BadRequest(error);
-        
-        return Ok();
+
+        return Ok(booking);
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<Booking>> DeleteBooking(int id)
+    public async Task<IActionResult> DeleteBooking(int id)
     {
         if (id <= 0)
             return BadRequest(new { error = "Ungültige Id" });
-        
+
         var booking = await _bookingService.GetBookingByIdAsync(id);
-        if(booking == null)
+        if (booking == null)
             return NotFound();
-        
+
         var (deleted, error) = await _bookingService.DeleteBookingAsync(booking);
-        if(!deleted)
+        if (!deleted)
             return BadRequest(error);
-        
+
         return Ok();
     }
+
 }

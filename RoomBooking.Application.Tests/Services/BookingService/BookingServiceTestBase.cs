@@ -1,8 +1,6 @@
-using System;
 using Microsoft.Extensions.Logging;
 using Moq;
 using RoomBooking.Application.Interfaces;
-using RoomBooking.Application.Services;
 using RoomBooking.Domain.Models;
 
 namespace RoomBooking.Application.Tests.Services.BookingService;
@@ -25,7 +23,7 @@ public abstract class BookingServiceTestBase
         return new Booking
         {
             Id = 1,
-            EmployeeId = "emp-1",
+            UserId = 1,
             RoomId = 1,
             StartDate = DateTime.Now.AddHours(1),
             EndDate = DateTime.Now.AddHours(2)

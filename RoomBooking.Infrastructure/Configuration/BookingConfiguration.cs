@@ -19,9 +19,9 @@ public class BookingConfiguration  : IEntityTypeConfiguration<Booking>
         builder.Property(b => b.EndDate)
             .IsRequired();
         
-        builder.HasOne(b => b.Employee)
+        builder.HasOne(b => b.User)
             .WithMany()
-            .HasForeignKey(b => b.EmployeeId)
+            .HasForeignKey(b => b.UserId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
         
