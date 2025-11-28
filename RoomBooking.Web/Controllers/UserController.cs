@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 
 using RoomBooking.Application.Interfaces;
 using RoomBooking.Domain.Models;
+using RoomBooking.Web.Dtos.Users;
+using RoomBooking.Web.Mappings;
 
 namespace RoomBooking.Web.Controllers;
 
@@ -22,18 +24,18 @@ public class UserController : ControllerBase
     [HttpGet]
     [AllowAnonymous]
     
-    public async Task<ActionResult<List<User>>> GetAll()
+    public async Task<ActionResult<List<UserDto>>> GetAll()
     {
         var users = await _userService.GetAllUsersAsync();
-        return Ok(users);
+        return Ok(users.ToDtos().ToList());
     }
 
     
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<User>> GetUserById(int id)
+    public async Task<ActionResult<UserDto>> GetUserById(int id)
     {
         var user = await _userService.GetUserByIdAsync(id);
         if (user == null) return NotFound();
-        return Ok(user);
+        return Ok(user.ToDto());
     }
 }
