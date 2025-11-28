@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using RoomBooking.Application.Interfaces;
 using RoomBooking.Domain.Models;
+using RoomBooking.Web.Dtos.Rooms;
+using RoomBooking.Web.Mappings;
 
 namespace RoomBooking.Web.Controllers;
 
@@ -16,43 +18,51 @@ public class RoomController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Room>>> GetAllRooms()
+    public async Task<ActionResult<List<RoomDto>>> GetAllRooms()
     {
-        var result = await _roomService.GetAllRoomsAsync();
-        return Ok(result);
+        var rooms = await _roomService.GetAllRoomsAsync();
+        return Ok(rooms.ToDto().ToList());
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Room>> GetRoomById(int id)
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<RoomDto>> GetRoomById(int id)
     {
-        var result = await _roomService.GetRoomByIdAsync(id);
-        if(result == null)
+        var room = await _roomService.GetRoomByIdAsync(id);
+        if(room == null)
             return NotFound();
-        return Ok(result);
+        return Ok(room.ToDto());
     }
     
     [HttpPost]
-    public async Task<ActionResult> AddRoom([FromBody] Room room)
+    public async Task<ActionResult<RoomDto>> AddRoom([FromBody] RoomCreateDto dto)
     {
+        var room = dto.ToEntity();
+        
         var (success, error) = await _roomService.AddRoomAsync(room);
         if (!success)
             return BadRequest(error);
-        return Ok(room);
+        return Ok(room.ToDto());
     }
 
-    [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateRoom(int id, [FromBody] Room room)
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<RoomDto>> UpdateRoom(int id, [FromBody] RoomUpdateDto dto)
     {
-        if (id != room.Id)
+        
+        if (id != dto.Id)
             return BadRequest("Room ID mismatch");
 
-        var (success, error) = await _roomService.UpdateRoomAsync(room);
+        var existing = await _roomService.GetRoomByIdAsync(id);
+        if (existing == null)
+            return NotFound();
+        
+        var (success, error) = await _roomService.UpdateRoomAsync(existing);
         if (!success)
             return BadRequest(error);
-        return Ok(room);
+        return Ok(existing.ToDto());
+        
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     public async Task<ActionResult> DeleteRoom(int id)
     {
         if (id <= 0)
