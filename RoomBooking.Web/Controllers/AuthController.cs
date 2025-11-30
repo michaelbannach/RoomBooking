@@ -1,6 +1,7 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RoomBooking.Application.Dtos;
+using RoomBooking.Web.Dtos.Auth;
 using RoomBooking.Application.Interfaces;
 
 namespace RoomBooking.Web.Controllers;
@@ -23,7 +24,7 @@ public class AuthController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var (success, error) = await _authService.LoginAsync(dto);
+        var (success, error) = await _authService.LoginAsync(dto.Email, dto.Password);
         if (!success)
             return Unauthorized(new { error });
 
@@ -38,7 +39,7 @@ public class AuthController : ControllerBase
         if (!ModelState.IsValid)
             return ValidationProblem(ModelState);
 
-        var (success, error, appUserId, userId) = await _authService.RegisterAsync(dto);
+        var (success, error, appUserId, userId) = await _authService.RegisterAsync(dto.Email, dto.Password,dto.FirstName, dto.LastName);
         if (!success)
             return BadRequest(new { error });
 

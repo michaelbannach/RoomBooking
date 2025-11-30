@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace RoomBooking.Application.Dtos;
+namespace RoomBooking.Web.Dtos.Auth;
 
 public record RegisterDto
 {

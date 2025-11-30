@@ -1,4 +1,4 @@
-namespace RoomBooking.Application.Dtos;
+namespace RoomBooking.Web.Dtos.Auth;
 
 public record LoginDto
 {

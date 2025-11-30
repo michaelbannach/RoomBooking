@@ -84,4 +84,8 @@
       <ProjectReference Include="..\RoomBooking.Domain\RoomBooking.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Dtos\" />
+    </ItemGroup>
+
 </Project>

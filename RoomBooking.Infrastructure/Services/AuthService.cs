@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity;
 
-using RoomBooking.Application.Dtos;
 using RoomBooking.Application.Interfaces;
 using RoomBooking.Infrastructure.Data;
 using RoomBooking.Infrastructure.Models;
@@ -29,37 +28,37 @@ public class AuthService : IAuthService
         _logger = logger;
     }
 
-    public async Task<(bool success, string? error)> LoginAsync(LoginDto dto)
+    public async Task<(bool success, string? error)> LoginAsync(string email, string password)
     {
-        var user = await _userManager.FindByEmailAsync(dto.Email);
+        var user = await _userManager.FindByEmailAsync(email);
         if (user == null)
         {
-            _logger.LogWarning("LoginAsync: Benutzer mit E-Mail {Email} nicht gefunden", dto.Email);
+            _logger.LogWarning("LoginAsync: Benutzer mit E-Mail {Email} nicht gefunden", email);
             return (false, "Ungültige Anmeldedaten.");
         }
 
-        var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
+        var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
         if (!result.Succeeded)
         {
-            _logger.LogWarning("LoginAsync: Passwort falsch für Benutzer {Email}", dto.Email);
+            _logger.LogWarning("LoginAsync: Passwort falsch für Benutzer {Email}", email);
             return (false, "Ungültige Anmeldedaten.");
         }
 
-        // hier später: Token generieren
+       
         return (true, null);
     }
 
-    public async Task<(bool success, string? error, string? appUserId, int? userId)> RegisterAsync(RegisterDto dto)
+    public async Task<(bool success, string? error, string? appUserId, int? userId)> RegisterAsync(string email, string password, string firstName, string lastName)
     {
         var appUser = new ApplicationUser
         {
-            UserName = dto.Email,
-            Email = dto.Email
+            UserName = email,
+            Email = email
         };
 
         await using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
-        var identityResult = await _userManager.CreateAsync(appUser, dto.Password);
+        var identityResult = await _userManager.CreateAsync(appUser, password);
         if (!identityResult.Succeeded)
         {
             var errorText = string.Join("; ", identityResult.Errors.Select(e => e.Description));
@@ -70,8 +69,8 @@ public class AuthService : IAuthService
 
         var (success, error, user) = await _userService.CreateUserAsync(
             appUser.Id,
-            dto.FirstName,
-            dto.LastName);
+            firstName,
+            lastName);
 
         if (!success || user == null)
         {

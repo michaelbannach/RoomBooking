@@ -2,7 +2,7 @@ using System;
 using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
-using RoomBooking.Application.Dtos;
+using RoomBooking.Web.Dtos.Auth;
 using Xunit;
 
 namespace RoomBooking.Web.IntegrationTests.Controllers;

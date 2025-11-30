@@ -1,4 +1,4 @@
-using RoomBooking.Application.Dtos;
+
 using RoomBooking.Domain.Models;
 
 namespace RoomBooking.Application.Interfaces;

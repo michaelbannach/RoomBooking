@@ -9,20 +9,19 @@ namespace RoomBooking.Infrastructure.Seeding;
 
 public static class DevelopmentSeeder
 {
-    // <<< NEU: Guard gegen mehrfaches Seeding >>>
+   
     private static bool _initialized;
     private static readonly object _lock = new();
 
     public static async Task SeedAsync(IServiceProvider services)
     {
-        // --- Doppeltes/Paralleles Seeding verhindern ---
         if (_initialized) return;
         lock (_lock)
         {
             if (_initialized) return;
             _initialized = true;
         }
-        // ----------------------------------------------
+        
 
         using var scope = services.CreateScope();
 
@@ -45,8 +44,8 @@ public static class DevelopmentSeeder
             .Select(r => r.Id)
             .FirstAsync();
 
-        // 2) APPLICATIONUSER seeden
-        const string userName = "seed_admin";          // wichtig: passt zu deinem Fehler-Log
+        
+        const string userName = "seed_admin";         
         const string email    = "seed_admin@test.local";
         const string password = "Test123!";
 
@@ -76,7 +75,7 @@ public static class DevelopmentSeeder
                              e.Code == "DuplicateUserName" ||
                              e.Code == "DuplicateEmail"))
                 {
-                    // Falls trotzdem jemand "schneller" war
+                    
                     existingIdentityUser =
                         await userManager.FindByNameAsync(userName)
                         ?? await userManager.FindByEmailAsync(email);
@@ -99,7 +98,7 @@ public static class DevelopmentSeeder
             }
         }
 
-        // 3) DOMAIN-USER seeden (Users-Tabelle)
+        
         var existingDomainUser = await db.Users
             .FirstOrDefaultAsync(u => u.IdentityUserId == existingIdentityUser!.Id);
 
@@ -116,7 +115,7 @@ public static class DevelopmentSeeder
             await db.SaveChangesAsync();
         }
 
-        // 4) BOOKING seeden
+        
         if (!await db.Bookings.AnyAsync())
         {
             await db.Bookings.AddAsync(new Booking
