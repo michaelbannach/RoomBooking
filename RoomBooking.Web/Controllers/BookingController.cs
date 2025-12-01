@@ -29,7 +29,7 @@ public class BookingController : ControllerBase
     public async Task<ActionResult<BookingDto>> GetBookingById(int id)
     {
         if (id <= 0)
-            return BadRequest("Ungültige Id");
+            return BadRequest("Invalid BookingId");
 
         var booking = await _bookingService.GetBookingByIdAsync(id);
         if (booking == null)
@@ -43,7 +43,7 @@ public class BookingController : ControllerBase
     public async Task<ActionResult<BookingDto>> AddBooking([FromBody] BookingCreateDto dto)
     {
         if (dto == null)
-            return BadRequest("Booking darf nicht null sein.");
+            return BadRequest("Booking is null.");
 
         // Domain-Entity aus DTO erzeugen
         var booking = dto.ToEntity();
@@ -61,16 +61,16 @@ public class BookingController : ControllerBase
     public async Task<ActionResult<BookingDto>> UpdateBooking(int id, [FromBody] BookingUpdateDto dto)
     {
         if (dto == null || id != dto.Id)
-            return BadRequest("Booking ID ist null oder Id stimmt nicht überein");
+            return BadRequest("BookingId is null or mismatch");
 
         if (id <= 0)
-            return BadRequest("Ungültige Id");
+            return BadRequest("Invalid Id");
 
         var existing = await _bookingService.GetBookingByIdAsync(id);
         if (existing == null)
             return NotFound();
 
-        // DTO-Werte auf bestehende Domain-Entity anwenden
+        // Apply dtos on existing entities
         dto.Apply(existing);
 
         var (updated, error) = await _bookingService.UpdateBookingAsync(existing);
@@ -85,7 +85,7 @@ public class BookingController : ControllerBase
     public async Task<IActionResult> DeleteBooking(int id)
     {
         if (id <= 0)
-            return BadRequest(new { error = "Ungültige Id" });
+            return BadRequest(new { error = "Invalid Id" });
 
         var booking = await _bookingService.GetBookingByIdAsync(id);
         if (booking == null)

@@ -26,7 +26,7 @@ public class UserService  : IUserService
     public async Task<(bool success, string? error, User? user)> CreateUserAsync(string identityUserId, string firstName, string lastName)
     {
         if (string.IsNullOrWhiteSpace(identityUserId))
-            return (false, "IdentityUserId darf nicht leer sein.", null);
+            return (false, "IdentityUserId must not be empty.", null);
 
         if(string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName))
             return (false, "FirstName & LastName are required.", null);
@@ -41,8 +41,8 @@ public class UserService  : IUserService
         var ok = await _userRepository.CreateUserAsync(user);
         if (!ok)
         {
-            _logger.LogError("CreateUserAsync: User konnte nicht gespeichert werden.");
-            return (false, "Fehler beim Speichern des Users.", null);
+            _logger.LogError("CreateUserAsync: Error while creating user");
+            return (false, "Error while creating user.", null);
         }
 
         return (true, null, user);
@@ -51,13 +51,13 @@ public class UserService  : IUserService
     public async Task<(bool success, string? error)> UpdateUserAsync(User user)
     {
         if (user.Id <= 0)
-            return (false, "Ungültige User-Id.");
+            return (false, "Invalid UserId");
 
         var ok = await _userRepository.UpdateUserAsync(user);
         if (!ok)
         {
-            _logger.LogError("UpdateAsync: Fehler beim Aktualisieren des Users mit Id {Id}", user.Id);
-            return (false, "Fehler beim Aktualisieren des Users.");
+            _logger.LogError("UpdateAsync: Error while updating UserId {Id}", user.Id);
+            return (false, "Error while updating UserId.");
         }
 
         return (true, null);
@@ -66,13 +66,13 @@ public class UserService  : IUserService
     public async Task<(bool success, string? error)> DeleteUserAsync(User user)
     {
         if (user.Id <= 0)
-            return (false, "Ungültige User-Id.");
+            return (false, "Invalid UserId.");
 
         var ok = await _userRepository.DeleteUserAsync(user);
         if (!ok)
         {
-            _logger.LogError("DeleteAsync: Fehler beim Löschen des Users mit Id {Id}", user.Id);
-            return (false, "Fehler beim Löschen des Users.");
+            _logger.LogError("DeleteAsync: Error while deleting UserId {Id}", user.Id);
+            return (false, "Error while deleting user.");
         }
 
         return (true, null);

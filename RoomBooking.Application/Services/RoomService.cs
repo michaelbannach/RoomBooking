@@ -23,8 +23,8 @@ public class RoomService  : IRoomService
     {
         if (roomId <= 0)
         {
-            _logger.LogWarning("GetRoomByIdAsync: Ungültige Room ID {RoomId}", roomId);
-            throw new ArgumentException("Room Id must be greater than zero");
+            _logger.LogWarning("GetRoomByIdAsync: Invalid RoomId {RoomId}", roomId);
+            throw new ArgumentException("Room Id must be greater than zero. Not Allowd");
         }
         return await _roomRepository.GetRoomByIdAsync(roomId);
     }
@@ -33,28 +33,28 @@ public class RoomService  : IRoomService
     {
         if (room == null)
         {
-            _logger.LogWarning("AddRoomAsync: Room ist NULL");
-            return(false, "Room ist NULL");
+            _logger.LogWarning("AddRoomAsync: Room is null");
+            return(false, "Room is null");
         }
         
         var exists = await _roomRepository.RoomExistsAsync(room.Name, room.Id);
         if (exists)
         {
-            _logger.LogWarning("AddRoomAsync: Raumname bereits vergeben");
-            return(false, "Raumname ist bereits vergeben");
+            _logger.LogWarning("AddRoomAsync: Roomname already exists");
+            return(false, "Room already exists");
         }
 
         if (room.Capacity <= 0)
         {
-            _logger.LogWarning("AddRoomAsync: Capacity darf nicht kleiner gleich null sein");
-            return(false, "Capacity darf nicht kleiner gleich null sein");
+            _logger.LogWarning("AddRoomAsync: Invalid Capacity. Must be greater than zero. Not Allowed");
+            return(false, "Capacity must not be equal or less than zero");
         }
         
         var ok = await _roomRepository.AddRoomAsync(room);
         if (!ok)
         {
-            _logger.LogError("AddRoomAsync: Fehler beim Speichern");
-            return(false, "Fehler beim Speichern");
+            _logger.LogError("AddRoomAsync: Error while adding new room");
+            return(false, "Error while adding new room");
         }
 
         return (true, null);
@@ -66,34 +66,34 @@ public class RoomService  : IRoomService
     {
         if (room == null)
         {
-            _logger.LogWarning("UpdateRoomAsync: Room ist NULL");
-            return (false, "Room darf nicht NULL sein");
+            _logger.LogWarning("UpdateRoomAsync: Room is null");
+            return (false, "Room must not be null");
         }
         
         if (room.Id <= 0)
         {
-            _logger.LogWarning("UpdateRoomAsync: Ungültige Room ID {RoomId}", room.Id);
-            return (false, "Ungültige Room ID");
+            _logger.LogWarning("UpdateRoomAsync: Invalid RoomId {RoomId}", room.Id);
+            return (false, "Invalid RoomId");
         }
 
         if (room.Capacity <= 0)
         {
-            _logger.LogWarning("AddRoomAsync: Capacity darf nicht kleiner gleich null sein");
-            return(false, "Capacity darf nicht kleiner gleich null sein");
+            _logger.LogWarning("AddRoomAsync: Invalid Capacity. Must be greater than zero. Not Allowed");
+            return(false, "Capacity must not be equal or less than zero");
         }
         
         var exists = await _roomRepository.RoomExistsAsync(room.Name, room.Id);
         if (exists)
         {
-            _logger.LogWarning("UpdateRoomAsync: Raumname bereits vergeben");
-            return(false, "Raumname ist bereits vergeben");
+            _logger.LogWarning("UpdateRoomAsync: Roomname already exists");
+            return(false, "Roomname already exists");
         }
        
         var result = await _roomRepository.UpdateRoomAsync(room);
         if (!result)
         {
-            _logger.LogError("UpdateRoomAsync: Fehler beim Aktualisieren des Raums mit Id {RoomId}", room.Id);
-            return (false, "Fehler beim Aktualisieren");
+            _logger.LogError("UpdateRoomAsync: Error while update RoomId {RoomId}", room.Id);
+            return (false, "Error while updating room");
         }
          
         return (true, null);
@@ -103,15 +103,15 @@ public class RoomService  : IRoomService
     {
         if (room.Id <= 0)
         {
-            _logger.LogWarning("DeleteRoomByIdAsync: Ungültige Room ID {RoomId}", room.Id);
-            return (false, "Ungültige Room ID");
+            _logger.LogWarning("DeleteRoomByIdAsync: Invalid RoomId {RoomId}", room.Id);
+            return (false, "Invalid RoomId");
         }
 
         var deleted = await _roomRepository.DeleteRoomByIdAsync(room.Id);
         if (!deleted)
         {
-            _logger.LogError("DeleteRoomByIdAsync: Fehler beim Löschen des Raums mit der Id {RoomId}", room.Id);
-            return (false, "Fehler beim Löschen des Raums");
+            _logger.LogError("DeleteRoomByIdAsync: Error while deleting RoomId {RoomId}", room.Id);
+            return (false, "Error while deleting room");
         }
         return (true, null);
     }

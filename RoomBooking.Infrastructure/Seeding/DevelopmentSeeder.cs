@@ -83,7 +83,7 @@ public static class DevelopmentSeeder
                 else
                 {
                     throw new Exception(
-                        "ApplicationUser konnte nicht angelegt werden: " +
+                        "ApplicationUser couldn´t be created: " +
                         string.Join(", ", result.Errors.Select(e => e.Description)));
                 }
             }
@@ -91,7 +91,7 @@ public static class DevelopmentSeeder
                 ex.InnerException is SqlException sqlEx &&
                 sqlEx.Message.Contains("UserNameIndex", StringComparison.OrdinalIgnoreCase))
             {
-                // Unique-Constraint ausgelöst → User einfach laden
+              
                 existingIdentityUser =
                     await userManager.FindByNameAsync(userName)
                     ?? await userManager.FindByEmailAsync(email);

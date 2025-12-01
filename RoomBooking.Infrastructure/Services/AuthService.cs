@@ -33,15 +33,15 @@ public class AuthService : IAuthService
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null)
         {
-            _logger.LogWarning("LoginAsync: Benutzer mit E-Mail {Email} nicht gefunden", email);
-            return (false, "Ungültige Anmeldedaten.");
+            _logger.LogWarning("LoginAsync: User {Email} not found", email);
+            return (false, "User not found");
         }
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
         if (!result.Succeeded)
         {
-            _logger.LogWarning("LoginAsync: Passwort falsch für Benutzer {Email}", email);
-            return (false, "Ungültige Anmeldedaten.");
+            _logger.LogWarning("LoginAsync: Incorrect password{Email}", email);
+            return (false, "Incorrect password");
         }
 
        
@@ -62,7 +62,7 @@ public class AuthService : IAuthService
         if (!identityResult.Succeeded)
         {
             var errorText = string.Join("; ", identityResult.Errors.Select(e => e.Description));
-            _logger.LogWarning("RegisterAsync: Identity-User konnte nicht erstellt werden: {Errors}", errorText);
+            _logger.LogWarning("RegisterAsync: Failed to create Identity-User: {Errors}", errorText);
             await transaction.RollbackAsync();
             return (false, errorText, null, null);
         }
@@ -74,10 +74,10 @@ public class AuthService : IAuthService
 
         if (!success || user == null)
         {
-            _logger.LogError("RegisterAsync: Domain-User konnte nicht erstellt werden: {Error}", error);
+            _logger.LogError("RegisterAsync: Failed to create domain user: {Error}", error);
             await _userManager.DeleteAsync(appUser);
             await transaction.RollbackAsync();
-            return (false, error ?? "Fehler beim Erstellen des Users.", null, null);
+            return (false, error ?? "Failed to create domain user", null, null);
         }
 
         await transaction.CommitAsync();

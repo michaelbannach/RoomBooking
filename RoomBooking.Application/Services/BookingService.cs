@@ -24,8 +24,8 @@ public class BookingService : IBookingService
     {
         if (bookingId <= 0)
         {
-            _logger.LogWarning("Booking Id must be greater than zero.");
-            throw new ArgumentException("Booking Id must be greater than zero.", nameof(bookingId));
+            _logger.LogWarning("BookingId must be greater than zero.");
+            throw new ArgumentException("BookingId must be greater than zero.", nameof(bookingId));
         }
 
         return await _bookingRepository.GetBookingByIdAsync(bookingId);
@@ -35,20 +35,20 @@ public class BookingService : IBookingService
     {
         if (userId <= 0)
         {
-            _logger.LogWarning("AddBookingAsync: unbekannter Benutzer");
-            return (false, "Unbekannter Benutzer");
+            _logger.LogWarning("AddBookingAsync: Unknokn user");
+            return (false, "Unknown user");
         }
 
         if (booking.StartDate < DateTime.UtcNow)
         {
-            _logger.LogWarning("AddBookingAsync: StartTime darf nicht in der Vergangenheit liegen");
-            return (false,  "StartTime in der Vergangenheit");
+            _logger.LogWarning("AddBookingAsync: StartTime in the past. Not allowed.");
+            return (false,  "StartTime is in the past. Not allowed");
         }
 
         if (booking.EndDate <= booking.StartDate)
         {
-            _logger.LogWarning("AddBookingAsync: EndTime darf nicht vor oder gleich StartTime sein");
-            return (false,  "EndTime früher oder gleich StartTime");
+            _logger.LogWarning("AddBookingAsync: EndTime must not be earlier than or equal to StartTime.");
+            return (false,  "EndTime earlier or equal to StartTime. Not allowed.");
         }
         
     
@@ -58,15 +58,15 @@ public class BookingService : IBookingService
 
         if (overlaps)
         {
-            _logger.LogWarning("AddBookingAsync: Buchung besteht bereits");
-            return (false, "Buchung besteht bereits");
+            _logger.LogWarning("AddBookingAsync: Booking already exists. Overlapping");
+            return (false, "Booking already exists. Overlapping");
         }
         
         var ok = await _bookingRepository.AddBookingAsync(booking);
         if (!ok)
         {
-            _logger.LogError("AddBookingAsync: Fehler beim Speichern");
-            return (false, "Fehler beim Speichern");
+            _logger.LogError("AddBookingAsync: Error while saving");
+            return (false, "Error while saving");
         }
         return (true, null);
     }
@@ -75,33 +75,33 @@ public class BookingService : IBookingService
     {
         if (booking == null)
         {
-            _logger.LogWarning("UpdateBookingAsync: Booking ist null");
-            return (false, "Booking darf nicht null sein.");
+            _logger.LogWarning("UpdateBookingAsync: Booking is null");
+            return (false, "Booking is null. Not allowed.");
         }
 
         if (booking.Id <= 0)
         {
-            _logger.LogWarning("UpdateBookingAsync: Ungültige Booking-Id: {Id}", booking.Id);
-            return (false, "Ungültige Booking-Id.");
+            _logger.LogWarning("UpdateBookingAsync: Invalid Booking-Id: {Id}", booking.Id);
+            return (false, "Invalid BookingId.");
         }
 
         var existing = await _bookingRepository.GetBookingByIdAsync(booking.Id);
         if (existing == null)
         {
-            _logger.LogWarning("UpdateBookingAsync: Booking mit Id {Id} nicht gefunden", booking.Id);
-            return (false, $"Booking mit Id {booking.Id} nicht gefunden.");
+            _logger.LogWarning("UpdateBookingAsync: BookingId {Id} not found", booking.Id);
+            return (false, $"BookingId {booking.Id} not found.");
         }
 
         if (booking.StartDate >= booking.EndDate)
         {
-            _logger.LogWarning("UpdateBookingAsync: Startzeit muss vor Endzeit liegen.");
-            return (false, "Startzeit muss vor Endzeit liegen.");
+            _logger.LogWarning("UpdateBookingAsync: StartTime must be earlier then EndTime.");
+            return (false, "StartTime must be earlier then EndTime.");
         }
 
         if (booking.StartDate < DateTime.Now)
         {
-            _logger.LogWarning("UpdaateBookingAsync: StartTime ist in der Vergangenheit");
-            return (false, "StartTime in der Vergangenheit");
+            _logger.LogWarning("UpdaateBookingAsync: StartTime is in the past. Not allowed.");
+            return (false, "StartTime is in the past. Not allowed");
         }
         
         var bookingsInRoom = await _bookingRepository.GetBookingsByRoomIdAsync(booking.RoomId);
@@ -111,15 +111,15 @@ public class BookingService : IBookingService
 
         if (overlaps)
         {
-            _logger.LogWarning("UpdateBookingAsync: Überschneidung mit bestehender Buchung");
-            return (false, "Raum ist im gewünschten Zeitraum bereits gebucht.");
+            _logger.LogWarning("UpdateBookingAsync: Booking already exists. Overlapping");
+            return (false, "Already booked.  Overlapping");
         }
 
         var result = await _bookingRepository.UpdateBookingAsync(booking);
         if (!result)
         {
-            _logger.LogError("UpdateBookingAsync: Fehler beim Aktualisieren der Buchung mit Id {Id}", booking.Id);
-            return (false, "Fehler beim Aktualisieren der Buchung.");
+            _logger.LogError("UpdateBookingAsync: Failed to update Booking with Id {Id}", booking.Id);
+            return (false, "Error while updating the booking.");
         }
 
         return (true, null);
@@ -129,29 +129,29 @@ public class BookingService : IBookingService
     {
         if (booking == null)
         {
-            _logger.LogWarning("DeleteBookingAsync: Booking ist null");
-            return (false, "Booking darf nicht null sein.");
+            _logger.LogWarning("DeleteBookingAsync: Booking is null");
+            return (false, "Booking must not be null.");
         }
 
         if (booking.Id <= 0)
         {
-            _logger.LogWarning("DeleteBookingAsync: Ungültige BookingId");
-            return(false,"Ungültige Booking-Id.");
+            _logger.LogWarning("DeleteBookingAsync: Invalid BookingId");
+            return(false,"Invalid BookingId.");
         }
 
         if (booking.UserId <= 0)
         {
-            _logger.LogWarning("DeleteBookingAsync: Leere Employee ID");
-            return(false,"Leere User ID");
+            _logger.LogWarning("DeleteBookingAsync: Empty UserId");
+            return(false,"Empty UserID");
         }
         
-        _logger.LogInformation("Lösche Booking mit Id {BookingId} für User {UserId}", booking.Id, booking.UserId);
+        _logger.LogInformation("Delete booking {BookingId} from user {UserId}", booking.Id, booking.UserId);
 
         var deleted = await _bookingRepository.DeleteBookingByIdAsync(booking.Id);
         if (!deleted)
         {
-            _logger.LogError("DeleteBookingAsync: Fehler beim Löschen der Buchung mit Id {BookingId}", booking.Id);
-            return (false, "Fehler beim Löschen der Buchung.");
+            _logger.LogError("DeleteBookingAsync: Error while deleting BookingId {BookingId}", booking.Id);
+            return (false, "Error while deleting the booking.");
         }
 
         return (true, null);

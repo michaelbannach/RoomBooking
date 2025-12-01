@@ -49,7 +49,7 @@ public class RoomController : ControllerBase
     {
         
         if (id != dto.Id)
-            return BadRequest("Room ID mismatch");
+            return BadRequest("RoomId mismatch");
 
         var existing = await _roomService.GetRoomByIdAsync(id);
         if (existing == null)
@@ -67,7 +67,7 @@ public class RoomController : ControllerBase
     {
         if (id <= 0)
         {
-            return BadRequest(new { error = "Ungültige Id" });
+            return BadRequest(new { error = "Invalid RoomId" });
         }
         var room = await _roomService.GetRoomByIdAsync(id);
         if(room == null)
