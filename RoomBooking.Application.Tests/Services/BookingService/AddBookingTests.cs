@@ -85,7 +85,7 @@ public class BookingService_AddBookingTests : BookingServiceTestBase
         var (added, error) = await Sut.AddBookingAsync(1, booking);
 
         Assert.False(added);
-        Assert.Equal("Already booked, Overlapping", error);
+        Assert.Equal("Booking already exists. Overlapping", error);
         RepoMock.Verify(r => r.AddBookingAsync(It.IsAny<Booking>()), Times.Never);
     }
 

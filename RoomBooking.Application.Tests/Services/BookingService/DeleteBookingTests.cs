@@ -10,7 +10,7 @@ public class BookingService_DeleteBookingTests : BookingServiceTestBase
         var (deleted, error) = await Sut.DeleteBookingAsync(null!);
 
         Assert.False(deleted);
-        Assert.Equal("Booking darf nicht null sein.", error);
+        Assert.Equal("Booking must not be null", error);
         RepoMock.Verify(r => r.DeleteBookingByIdAsync(It.IsAny<int>()), Times.Never);
     }
 
@@ -23,7 +23,7 @@ public class BookingService_DeleteBookingTests : BookingServiceTestBase
         var (deleted, error) = await Sut.DeleteBookingAsync(booking);
 
         Assert.False(deleted);
-        Assert.Equal("Ungültige Booking-Id.", error);
+        Assert.Equal("Invalid BookingId", error);
         RepoMock.Verify(r => r.DeleteBookingByIdAsync(It.IsAny<int>()), Times.Never);
     }
 
@@ -36,7 +36,7 @@ public class BookingService_DeleteBookingTests : BookingServiceTestBase
         var (deleted, error) = await Sut.DeleteBookingAsync(booking);
 
         Assert.False(deleted);
-        Assert.Equal("Leere User ID", error);
+        Assert.Equal("Empty UserId", error);
         RepoMock.Verify(r => r.DeleteBookingByIdAsync(It.IsAny<int>()), Times.Never);
     }
 
@@ -52,7 +52,7 @@ public class BookingService_DeleteBookingTests : BookingServiceTestBase
         var (deleted, error) = await Sut.DeleteBookingAsync(booking);
 
         Assert.False(deleted);
-        Assert.Equal("Fehler beim Löschen der Buchung.", error);
+        Assert.Equal("Error deleting booking", error);
     }
 
     [Fact]

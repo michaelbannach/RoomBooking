@@ -17,7 +17,6 @@ public static class BookingMappings
         {
             StartDate = dto.StartDate,
             EndDate = dto.EndDate,
-            UserId = dto.UserId,
             RoomId = dto.RoomId
         };
 
@@ -25,7 +24,6 @@ public static class BookingMappings
     {
         booking.StartDate = dto.StartDate;
         booking.EndDate = dto.EndDate;
-        booking.UserId = dto.UserId;
         booking.RoomId = dto.RoomId;
     }
 }

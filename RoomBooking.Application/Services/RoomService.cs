@@ -24,7 +24,7 @@ public class RoomService  : IRoomService
         if (roomId <= 0)
         {
             _logger.LogWarning("GetRoomByIdAsync: Invalid RoomId {RoomId}", roomId);
-            throw new ArgumentException("Room Id must be greater than zero. Not Allowd");
+            throw new ArgumentException("Room Id must be greater than zero");
         }
         return await _roomRepository.GetRoomByIdAsync(roomId);
     }

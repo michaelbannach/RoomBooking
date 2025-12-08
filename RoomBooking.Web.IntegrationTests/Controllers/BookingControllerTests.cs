@@ -30,17 +30,16 @@ public class BookingControllerTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     [Fact]
-    public async Task AddBooking_ReturnsBadRequest_WhenInvalid()
+    public async Task AddBooking_ReturnsUnauthorized_WhenMissingToken()
     {
         var booking = new Booking
         {
-            // Missing EmployeeId → your controller returns BadRequest
             RoomId = 1,
             StartDate = DateTime.Now,
             EndDate = DateTime.Now.AddHours(1)
         };
 
         var response = await _client.PostAsJsonAsync("/api/Booking", booking);
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 }

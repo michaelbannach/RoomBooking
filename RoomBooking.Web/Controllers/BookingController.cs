@@ -20,6 +20,7 @@ public class BookingController : ControllerBase
 
     
     [HttpGet]
+    [AllowAnonymous]
     public async Task<ActionResult<List<BookingDto>>> GetAllBookings()
     {
         var bookings = await _bookingService.GetAllBookingsAsync();
@@ -28,6 +29,7 @@ public class BookingController : ControllerBase
 
     
     [HttpGet("{id:int}")]
+    [AllowAnonymous]
     public async Task<ActionResult<BookingDto>> GetBookingById(int id)
     {
         if (id <= 0)
@@ -48,20 +50,20 @@ public class BookingController : ControllerBase
             return BadRequest("Booking is null.");
 
         var userIdClaim = User.FindFirst("userId")?.Value;
-        if(!int.TryParse(userIdClaim, out var userId) || userId <= 0)
-            return Unauthorized(new {error ="UserId missing in token"});
-        
+        if (!int.TryParse(userIdClaim, out var userId) || userId <= 0)
+            return Unauthorized(new { error = "UserId missing in token" });
+
         var booking = dto.ToEntity();
 
-        booking.UserId = userId;
         
-        var (added, error) = await _bookingService.AddBookingAsync(dto.UserId, booking);
+        booking.UserId = userId;
+
+        var (added, error) = await _bookingService.AddBookingAsync(userId, booking);
         if (!added)
             return BadRequest(error);
 
         return Ok(booking.ToDto());
     }
-
     
     [HttpPut("{id:int}")]
     public async Task<ActionResult<BookingDto>> UpdateBooking(int id, [FromBody] BookingUpdateDto dto)
@@ -71,12 +73,18 @@ public class BookingController : ControllerBase
 
         if (id <= 0)
             return BadRequest("Invalid Id");
+        
+        var userIdClaim = User.FindFirst("userId")?.Value;
+        if (!int.TryParse(userIdClaim, out var userId) || userId <= 0)
+            return Unauthorized(new { error = "UserId missing in token" });
 
         var existing = await _bookingService.GetBookingByIdAsync(id);
         if (existing == null)
             return NotFound();
-
-        // Apply dtos on existing entities
+        
+        if (existing.UserId != userId)
+            return Forbid();
+        
         dto.Apply(existing);
 
         var (updated, error) = await _bookingService.UpdateBookingAsync(existing);
@@ -85,7 +93,6 @@ public class BookingController : ControllerBase
 
         return Ok(existing.ToDto());
     }
-
    
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteBooking(int id)
@@ -93,9 +100,16 @@ public class BookingController : ControllerBase
         if (id <= 0)
             return BadRequest(new { error = "Invalid Id" });
 
+        var userIdClaim = User.FindFirst("userId")?.Value;
+        if (!int.TryParse(userIdClaim, out var userId) || userId <= 0)
+            return Unauthorized(new { error = "UserId missing in token" });
+
         var booking = await _bookingService.GetBookingByIdAsync(id);
         if (booking == null)
             return NotFound();
+        
+        if (booking.UserId != userId)
+            return Forbid();
 
         var (deleted, error) = await _bookingService.DeleteBookingAsync(booking);
         if (!deleted)
@@ -103,4 +117,5 @@ public class BookingController : ControllerBase
 
         return Ok();
     }
+
 }

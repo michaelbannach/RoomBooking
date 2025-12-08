@@ -24,8 +24,8 @@ public class BookingService : IBookingService
     {
         if (bookingId <= 0)
         {
-            _logger.LogWarning("BookingId must be greater than zero.");
-            throw new ArgumentException("BookingId must be greater than zero.", nameof(bookingId));
+            _logger.LogWarning("BookingId must be greater than zero");
+            throw new ArgumentException("BookingId must be greater than zero", nameof(bookingId));
         }
 
         return await _bookingRepository.GetBookingByIdAsync(bookingId);
@@ -41,14 +41,14 @@ public class BookingService : IBookingService
 
         if (booking.StartDate < DateTime.UtcNow)
         {
-            _logger.LogWarning("AddBookingAsync: StartTime in the past. Not allowed.");
-            return (false,  "StartTime in the past. Not allowed");
+            _logger.LogWarning("AddBookingAsync: StartTime in the past. Not allowed");
+            return (false,  "StartTime in the past. Not Allowed");
         }
 
         if (booking.EndDate <= booking.StartDate)
         {
-            _logger.LogWarning("AddBookingAsync: EndTime must not be earlier than or equal to StartTime.");
-            return (false,  "EndTime earlier or equal StartTime. Not allowed.");
+            _logger.LogWarning("AddBookingAsync: EndTime must not be earlier than or equal to StartTime");
+            return (false,  "EndTime earlier or equal StartTime");
         }
         
     
@@ -76,32 +76,32 @@ public class BookingService : IBookingService
         if (booking == null)
         {
             _logger.LogWarning("UpdateBookingAsync: Booking is null");
-            return (false, "Booking is null. Not allowed.");
+            return (false, "Booking is null. Not allowed");
         }
 
         if (booking.Id <= 0)
         {
             _logger.LogWarning("UpdateBookingAsync: Invalid Booking-Id: {Id}", booking.Id);
-            return (false, "Invalid BookingId.");
+            return (false, "Invalid BookingId");
         }
 
         var existing = await _bookingRepository.GetBookingByIdAsync(booking.Id);
         if (existing == null)
         {
             _logger.LogWarning("UpdateBookingAsync: BookingId {Id} not found", booking.Id);
-            return (false, $"BookingId {booking.Id} not found.");
+            return (false, $"BookingId {booking.Id} not found");
         }
 
         if (booking.StartDate >= booking.EndDate)
         {
-            _logger.LogWarning("UpdateBookingAsync: StartTime must be earlier then EndTime.");
-            return (false, "StartTime must be earlier then EndTime.");
+            _logger.LogWarning("UpdateBookingAsync: StartTime must be earlier then EndTime");
+            return (false, "StartTime must be earlier then EndTime");
         }
 
         if (booking.StartDate < DateTime.Now)
         {
             _logger.LogWarning("UpdaateBookingAsync: StartTime is in the past. Not allowed.");
-            return (false, "StartTime is in the past. Not allowed");
+            return (false, "StartTime in the past. Not Allowed");
         }
         
         var bookingsInRoom = await _bookingRepository.GetBookingsByRoomIdAsync(booking.RoomId);
@@ -112,14 +112,14 @@ public class BookingService : IBookingService
         if (overlaps)
         {
             _logger.LogWarning("UpdateBookingAsync: Booking already exists. Overlapping");
-            return (false, "Already booked.  Overlapping");
+            return (false, "Already booked. Overlapping");
         }
 
         var result = await _bookingRepository.UpdateBookingAsync(booking);
         if (!result)
         {
             _logger.LogError("UpdateBookingAsync: Failed to update Booking with Id {Id}", booking.Id);
-            return (false, "Error while updating the booking.");
+            return (false, "Error while updating the booking");
         }
 
         return (true, null);
@@ -130,19 +130,19 @@ public class BookingService : IBookingService
         if (booking == null)
         {
             _logger.LogWarning("DeleteBookingAsync: Booking is null");
-            return (false, "Booking must not be null.");
+            return (false, "Booking must not be null");
         }
 
         if (booking.Id <= 0)
         {
             _logger.LogWarning("DeleteBookingAsync: Invalid BookingId");
-            return(false,"Invalid BookingId.");
+            return(false,"Invalid BookingId");
         }
 
         if (booking.UserId <= 0)
         {
             _logger.LogWarning("DeleteBookingAsync: Empty UserId");
-            return(false,"Empty UserID");
+            return(false,"Empty UserId");
         }
         
         _logger.LogInformation("Delete booking {BookingId} from user {UserId}", booking.Id, booking.UserId);
@@ -150,8 +150,8 @@ public class BookingService : IBookingService
         var deleted = await _bookingRepository.DeleteBookingByIdAsync(booking.Id);
         if (!deleted)
         {
-            _logger.LogError("DeleteBookingAsync: Error while deleting BookingId {BookingId}", booking.Id);
-            return (false, "Error while deleting the booking.");
+            _logger.LogError("DeleteBookingAsync: Error deleting BookingId {BookingId}", booking.Id);
+            return (false, "Error deleting booking");
         }
 
         return (true, null);

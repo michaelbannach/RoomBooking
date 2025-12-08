@@ -25,7 +25,7 @@ public class BookingService_UpdateBookingTests : BookingServiceTestBase
         var (updated, error) = await Sut.UpdateBookingAsync(booking);
 
         Assert.False(updated);
-        Assert.Equal("BookingId not found.", error);
+        Assert.Equal("Invalid BookingId", error);
         RepoMock.Verify(r => r.GetBookingByIdAsync(It.IsAny<int>()), Times.Never);
     }
 
@@ -41,7 +41,7 @@ public class BookingService_UpdateBookingTests : BookingServiceTestBase
         var (updated, error) = await Sut.UpdateBookingAsync(booking);
 
         Assert.False(updated);
-        Assert.Equal($"Booking mit Id {booking.Id} nicht gefunden.", error);
+        Assert.Equal($"BookingId {booking.Id} not found", error);
         RepoMock.Verify(r => r.UpdateBookingAsync(It.IsAny<Booking>()), Times.Never);
     }
 
@@ -59,7 +59,7 @@ public class BookingService_UpdateBookingTests : BookingServiceTestBase
         var (updated, error) = await Sut.UpdateBookingAsync(booking);
 
         Assert.False(updated);
-        Assert.Equal("Startzeit muss vor Endzeit liegen.", error);
+        Assert.Equal("StartTime must be earlier then EndTime", error);
         RepoMock.Verify(r => r.UpdateBookingAsync(It.IsAny<Booking>()), Times.Never);
     }
 
@@ -77,7 +77,7 @@ public class BookingService_UpdateBookingTests : BookingServiceTestBase
         var (updated, error) = await Sut.UpdateBookingAsync(booking);
 
         Assert.False(updated);
-        Assert.Equal("StartTime in der Vergangenheit", error);
+        Assert.Equal("StartTime in the past. Not Allowed", error);
         RepoMock.Verify(r => r.UpdateBookingAsync(It.IsAny<Booking>()), Times.Never);
     }
 
@@ -107,7 +107,7 @@ public class BookingService_UpdateBookingTests : BookingServiceTestBase
         var (updated, error) = await Sut.UpdateBookingAsync(booking);
 
         Assert.False(updated);
-        Assert.Equal("Raum ist im gewünschten Zeitraum bereits gebucht.", error);
+        Assert.Equal("Already booked. Overlapping", error);
         RepoMock.Verify(r => r.UpdateBookingAsync(It.IsAny<Booking>()), Times.Never);
     }
 
@@ -133,7 +133,7 @@ public class BookingService_UpdateBookingTests : BookingServiceTestBase
         var (updated, error) = await Sut.UpdateBookingAsync(booking);
 
         Assert.False(updated);
-        Assert.Equal("Fehler beim Aktualisieren der Buchung.", error);
+        Assert.Equal("Error while updating the booking", error);
     }
 
     [Fact]
