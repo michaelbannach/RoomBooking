@@ -48,6 +48,7 @@ public class AuthController : ControllerBase
             appUserId,
             userId,
             email = dto.Email
+            
         });
     }
 

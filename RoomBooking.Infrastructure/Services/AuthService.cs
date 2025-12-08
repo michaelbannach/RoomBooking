@@ -43,8 +43,7 @@ public class AuthService : IAuthService
             _logger.LogWarning("LoginAsync: Incorrect password{Email}", email);
             return (false, "Incorrect password");
         }
-
-       
+        
         return (true, null);
     }
 

@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using RoomBooking.Application.Interfaces;
-using RoomBooking.Domain.Models;
 using RoomBooking.Web.Dtos.Users;
 using RoomBooking.Web.Mappings;
 
