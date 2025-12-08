@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Styles für RoomBooking FullCalendar */
+.rb-calendar .fc {
+    --fc-border-color: #e2e8f0;       /* helles Grau für Grid-Linien */
+    --fc-page-bg-color: #ffffff;
+    --fc-neutral-bg-color: #67a3fd;   /* Header-Background, etc. */
+    --fc-today-bg-color: #fee2e2;     /* Hintergrund für "heute" */
+    --fc-now-indicator-color: #ef4444;
+}
+
+/* Kopfzeile über den Spalten (Platz 1, Platz 2, ...) */
+.rb-calendar .fc-col-header-cell {
+    background-color: #1a74fc; 
+    padding: 6px 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #ffffff;
+    border-bottom: 1px solid #fecaca;
+}
+
+.rb-calendar .fc-col-header-cell-cushion {
+    padding: 0;
+}
+
+/* linke Zeit-Spalte */
+.rb-calendar .fc-timegrid-axis {
+    background-color: #f8fafc;
+    color: #64748b;
+    font-size: 0.75rem;
+}
+
+/* Stunden-Zeilen etwas kompakter */
+.rb-calendar .fc-timegrid-slot {
+    height: 3.5rem;
+}
+/* Events in voller Spaltenbreite */
+.rb-calendar .fc-timegrid-event {
+    left: 0 !important;
+    right: 0 !important;
+    width: calc(100% - 0px) !important; /* 4px kleiner für minimalen Rand */
+    margin-left: 1px;
+    margin-right: 1px;
+}
+
+/* Events (Buchungen) */
+.rb-calendar .fc-event {
+    background-color: #fecaca; /* rosa */
+    border: 1px solid #f97373; /* etwas kräftigerer Rand */
+    color: #d3efde;
+    border-radius: 0.5rem;
+    padding: 2px 4px;
+    font-size: 0.75rem;
+}
+
+/* Event-Text */
+.rb-calendar .fc-event-title,
+.rb-calendar .fc-event-time {
+    font-weight: 500;
+}
+
+/* Hover-Effekt auf Events */
+.rb-calendar .fc-event:hover {
+    background-color: #fee2e2;
+    border-color: #fb7185;
+}
+
+/* Hintergrund der Timegrid-Spalten (Plätze) */
+.rb-calendar .fc-timegrid-cols {
+    background-color: #fff;
+}
+
+/* vertikale Grid-Linien etwas heller */
+.rb-calendar .fc-scrollgrid {
+    border-color: #e2e8f0;
+}
+
+/* Scrollbars innerhalb des Kalenders minimal */
+.rb-calendar .fc-scroller {
+    scrollbar-width: thin;
+}
+
+/* Optional: Zeitlinien-Zelle oben ("Zeit") optisch angleichen */
+.rb-calendar .fc-resource-area .fc-scrollgrid-section-header,
+.rb-calendar .fc-resource-area .fc-col-header-cell {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+/* Abwechselnd weiße / hellgraue Stundenzeilen im Timegrid */
+
+/* Standard-Hintergrund erstmal weiß lassen */
+.rb-calendar .fc-timegrid-slot {
+    background-color: #ffffff;
+}
+
+/* Jede zweite Zeile (Even) leicht grau einfärben */
+.rb-calendar .fc-timegrid-body tr:nth-child(even) .fc-timegrid-slot {
+    background-color: #f8fafc; /* sehr leichtes Grau */
+}
+
+/* Gleiche Färbung auch für die Zeit-Achse links */
+.rb-calendar .fc-timegrid-body tr:nth-child(even) .fc-timegrid-axis {
+    background-color: #f1f5f9;
+}
