@@ -9,11 +9,4 @@ public interface IRoomRepository
     
     Task<Room?> GetRoomByIdAsync(int roomId);
     
-    Task<bool> AddRoomAsync(Room room);
-    
-    Task<bool> UpdateRoomAsync(Room room);
-    
-    Task<bool> DeleteRoomByIdAsync(int roomId);
-    
-    Task<bool> RoomExistsAsync(string name, int excludeId);
 }

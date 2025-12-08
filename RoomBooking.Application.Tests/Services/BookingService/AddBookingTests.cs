@@ -14,11 +14,11 @@ public class BookingService_AddBookingTests : BookingServiceTestBase
         var (added, error) = await Sut.AddBookingAsync(0, booking);
 
         Assert.False(added);
-        Assert.Equal("Unbekannter Benutzer", error);
+        Assert.Equal("Unknown user", error);
         RepoMock.Verify(r => r.AddBookingAsync(It.IsAny<Booking>()), Times.Never);
     }
 
-    // StartDate in Vergangenheit --> Fehler
+    
     [Fact]
     public async Task AddBookingAsync_ReturnsError_WhenStartDateInPast()
     {
@@ -28,11 +28,11 @@ public class BookingService_AddBookingTests : BookingServiceTestBase
         var (added, error) = await Sut.AddBookingAsync(1, booking);
 
         Assert.False(added);
-        Assert.Equal("StartTime in der Vergangenheit", error);
+        Assert.Equal("StartTime in the past. Not Allowed", error);
         RepoMock.Verify(r => r.AddBookingAsync(It.IsAny<Booking>()), Times.Never);
     }
 
-    // EndDate <= StartDate --> Fehler
+    
     [Fact]
     public async Task AddBookingAsync_ReturnsError_WhenEndDateBeforeOrEqualStartDate()
     {
@@ -42,11 +42,10 @@ public class BookingService_AddBookingTests : BookingServiceTestBase
         var (added, error) = await Sut.AddBookingAsync(1, booking);
 
         Assert.False(added);
-        Assert.Equal("EndTime früher oder gleich StartTime", error);
+        Assert.Equal("EndTime earlier or equal StartTime", error);
         RepoMock.Verify(r => r.AddBookingAsync(It.IsAny<Booking>()), Times.Never);
     }
-
-    // Speichern schlägt fehl
+    
     [Fact]
     public async Task AddBookingAsync_ReturnsError_WhenSavingToRepositoryFails()
     {
@@ -63,10 +62,9 @@ public class BookingService_AddBookingTests : BookingServiceTestBase
         var (added, error) = await Sut.AddBookingAsync(1, booking);
 
         Assert.False(added);
-        Assert.Equal("Fehler beim Speichern", error);
+        Assert.Equal("Error while saving", error);
     }
-
-    // Overlapping Booking im gleichen Raum --> Fehler
+    
     [Fact]
     public async Task AddBookingAsync_ReturnsError_WhenOverlappingBookingExists()
     {
@@ -87,11 +85,11 @@ public class BookingService_AddBookingTests : BookingServiceTestBase
         var (added, error) = await Sut.AddBookingAsync(1, booking);
 
         Assert.False(added);
-        Assert.Equal("Buchung besteht bereits", error);
+        Assert.Equal("Already booked, Overlapping", error);
         RepoMock.Verify(r => r.AddBookingAsync(It.IsAny<Booking>()), Times.Never);
     }
 
-    // Erfolgsfall
+    
     [Fact]
     public async Task AddBookingAsync_ReturnsTrue_WhenValid()
     {

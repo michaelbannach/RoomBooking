@@ -12,7 +12,7 @@ public class BookingService_UpdateBookingTests : BookingServiceTestBase
         var (updated, error) = await Sut.UpdateBookingAsync(null!);
 
         Assert.False(updated);
-        Assert.Equal("Booking darf nicht null sein.", error);
+        Assert.Equal("Booking is null. Not allowed", error);
         RepoMock.Verify(r => r.UpdateBookingAsync(It.IsAny<Booking>()), Times.Never);
     }
 
@@ -25,7 +25,7 @@ public class BookingService_UpdateBookingTests : BookingServiceTestBase
         var (updated, error) = await Sut.UpdateBookingAsync(booking);
 
         Assert.False(updated);
-        Assert.Equal("Ungültige Booking-Id.", error);
+        Assert.Equal("BookingId not found.", error);
         RepoMock.Verify(r => r.GetBookingByIdAsync(It.IsAny<int>()), Times.Never);
     }
 

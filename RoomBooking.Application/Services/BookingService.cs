@@ -42,13 +42,13 @@ public class BookingService : IBookingService
         if (booking.StartDate < DateTime.UtcNow)
         {
             _logger.LogWarning("AddBookingAsync: StartTime in the past. Not allowed.");
-            return (false,  "StartTime is in the past. Not allowed");
+            return (false,  "StartTime in the past. Not allowed");
         }
 
         if (booking.EndDate <= booking.StartDate)
         {
             _logger.LogWarning("AddBookingAsync: EndTime must not be earlier than or equal to StartTime.");
-            return (false,  "EndTime earlier or equal to StartTime. Not allowed.");
+            return (false,  "EndTime earlier or equal StartTime. Not allowed.");
         }
         
     

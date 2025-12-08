@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RoomBooking.Application.Interfaces;
 using RoomBooking.Web.Dtos.Bookings;
@@ -7,6 +8,7 @@ namespace RoomBooking.Web.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class BookingController : ControllerBase
 {
     private readonly IBookingService _bookingService;
@@ -16,7 +18,7 @@ public class BookingController : ControllerBase
         _bookingService = bookingService;
     }
 
-    // GET: api/booking
+    
     [HttpGet]
     public async Task<ActionResult<List<BookingDto>>> GetAllBookings()
     {
@@ -24,7 +26,7 @@ public class BookingController : ControllerBase
         return Ok(bookings.ToDto().ToList());
     }
 
-    // GET: api/booking/5
+    
     [HttpGet("{id:int}")]
     public async Task<ActionResult<BookingDto>> GetBookingById(int id)
     {
@@ -38,17 +40,21 @@ public class BookingController : ControllerBase
         return Ok(booking.ToDto());
     }
 
-    // POST: api/booking
+   
     [HttpPost]
     public async Task<ActionResult<BookingDto>> AddBooking([FromBody] BookingCreateDto dto)
     {
         if (dto == null)
             return BadRequest("Booking is null.");
 
-        // Domain-Entity aus DTO erzeugen
+        var userIdClaim = User.FindFirst("userId")?.Value;
+        if(!int.TryParse(userIdClaim, out var userId) || userId <= 0)
+            return Unauthorized(new {error ="UserId missing in token"});
+        
         var booking = dto.ToEntity();
 
-        // Alle fachlichen Regeln (Zeiten, Overlaps usw.) sind im Service
+        booking.UserId = userId;
+        
         var (added, error) = await _bookingService.AddBookingAsync(dto.UserId, booking);
         if (!added)
             return BadRequest(error);
@@ -56,7 +62,7 @@ public class BookingController : ControllerBase
         return Ok(booking.ToDto());
     }
 
-    // PUT: api/booking/5
+    
     [HttpPut("{id:int}")]
     public async Task<ActionResult<BookingDto>> UpdateBooking(int id, [FromBody] BookingUpdateDto dto)
     {
@@ -80,7 +86,7 @@ public class BookingController : ControllerBase
         return Ok(existing.ToDto());
     }
 
-    // DELETE: api/booking/5
+   
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteBooking(int id)
     {

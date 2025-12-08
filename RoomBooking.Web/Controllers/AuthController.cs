@@ -24,12 +24,12 @@ public class AuthController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var (success, error) = await _authService.LoginAsync(dto.Email, dto.Password);
-        if (!success)
+        var (success, error, token) = await _authService.LoginAsync(dto.Email, dto.Password);
+        if (!success || token == null)
             return Unauthorized(new { error });
 
-        // später: JWT im Response zurückgeben
-        return Ok(new { Message = "Login ok" });
+        
+        return Ok(new { token });
     }
 
     [HttpPost("register")]

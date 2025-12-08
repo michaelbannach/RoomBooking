@@ -7,10 +7,5 @@ public interface IRoomService
     Task<List<Room>> GetAllRoomsAsync();
 
     Task<Room?> GetRoomByIdAsync(int roomId);
-
-    Task<(bool added, string? error)> AddRoomAsync(Room room);
-
-    Task<(bool updated, string? error)> UpdateRoomAsync(Room room);
-
-    Task<(bool deleted, string? error)> DeleteRoomAsync(Room room);
+    
 }
