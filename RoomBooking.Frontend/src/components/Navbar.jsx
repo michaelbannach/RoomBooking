@@ -1,21 +1,34 @@
+// src/components/Navbar.jsx
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+
 export default function Navbar() {
     return (
-        <header className="h-16 bg-blue-500 text-white flex items-center shadow">
-            <div className="max-w-6xl mx-auto w-full px-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-          <span className="font-semibold text-lg tracking-tight">
-            RoomBooking
-          </span>
-                </div>
+        <AppBar position="static" color="primary" elevation={1}>
+            <Toolbar>
+                <Typography
+                    variant="h6"
+                    component="div"
+                    sx={{ flexGrow: 1, fontWeight: 500 }}
+                >
+                    RoomBooking
+                </Typography>
 
-                <nav className="flex items-center gap-4 text-sm">
-                    <button className="hover:underline">Tagesansicht</button>
-                    <button className="hover:underline">Wochenansicht</button>
-                    <button className="rounded-full border border-white/70 px-3 py-1 text-xs font-medium hover:bg-white/10">
+                <Box sx={{ display: "flex", gap: 1 }}>
+                    <Button color="inherit" size="small">
+                        Tagesansicht
+                    </Button>
+                    <Button color="inherit" size="small">
+                        Wochenansicht
+                    </Button>
+                    <Button variant="outlined" color="inherit" size="small">
                         Jetzt buchen
-                    </button>
-                </nav>
-            </div>
-        </header>
+                    </Button>
+                </Box>
+            </Toolbar>
+        </AppBar>
     );
 }

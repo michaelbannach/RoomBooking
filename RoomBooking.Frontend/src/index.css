@@ -1,19 +1,76 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+body {
+    margin: 0;
+    font-family: "Roboto", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+    background-color: #f3f4f6;
+}
+
+/* Layout für die Seite */
+.app-root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f3f4f6;
+}
+
+.app-main {
+    flex: 1;
+    max-width: 960px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 16px;
+}
+
+/* DateNavigator */
+.date-nav {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.date-nav-btn {
+    padding: 4px 12px;
+    border-radius: 4px;
+    border: 1px solid #cbd5e1;
+    background-color: #ffffff;
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.date-nav-btn:hover {
+    background-color: #f8fafc;
+}
+
+.date-nav-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+/* Debug-Block unter dem Kalender */
+.debug-block {
+    margin-top: 16px;
+    font-size: 12px;
+    background-color: #e5e7eb;
+    padding: 8px;
+    border-radius: 4px;
+    white-space: pre-wrap;
+}
 
 /* Custom Styles für RoomBooking FullCalendar */
 .rb-calendar .fc {
-    --fc-border-color: #e2e8f0;       /* helles Grau für Grid-Linien */
+    --fc-border-color: #e2e8f0;
     --fc-page-bg-color: #ffffff;
-    --fc-neutral-bg-color: #67a3fd;   /* Header-Background, etc. */
-    --fc-today-bg-color: #fee2e2;     /* Hintergrund für "heute" */
+    --fc-neutral-bg-color: #67a3fd;
+    --fc-today-bg-color: #fee2e2;
     --fc-now-indicator-color: #ef4444;
 }
 
 /* Kopfzeile über den Spalten (Platz 1, Platz 2, ...) */
 .rb-calendar .fc-col-header-cell {
-    background-color: #1a74fc; 
+    background-color: #1a74fc;
     padding: 6px 8px;
     font-weight: 600;
     font-size: 0.9rem;
@@ -29,26 +86,27 @@
 .rb-calendar .fc-timegrid-axis {
     background-color: #f8fafc;
     color: #64748b;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
 }
 
 /* Stunden-Zeilen etwas kompakter */
 .rb-calendar .fc-timegrid-slot {
-    height: 3.5rem;
+    height: 1.75rem;
 }
+
 /* Events in voller Spaltenbreite */
 .rb-calendar .fc-timegrid-event {
     left: 0 !important;
     right: 0 !important;
-    width: calc(100% - 0px) !important; /* 4px kleiner für minimalen Rand */
+    width: calc(100% - 0px) !important;
     margin-left: 1px;
     margin-right: 1px;
 }
 
 /* Events (Buchungen) */
 .rb-calendar .fc-event {
-    background-color: #fecaca; /* rosa */
-    border: 1px solid #f97373; /* etwas kräftigerer Rand */
+    background-color: #fecaca;
+    border: 1px solid #f97373;
     color: #d3efde;
     border-radius: 0.5rem;
     padding: 2px 4px;
@@ -88,19 +146,70 @@
     background-color: #fee2e2;
     color: #b91c1c;
 }
-/* Abwechselnd weiße / hellgraue Stundenzeilen im Timegrid */
 
-/* Standard-Hintergrund erstmal weiß lassen */
+/* Standard-Hintergrund für Slots */
 .rb-calendar .fc-timegrid-slot {
     background-color: #ffffff;
 }
 
 /* Jede zweite Zeile (Even) leicht grau einfärben */
 .rb-calendar .fc-timegrid-body tr:nth-child(even) .fc-timegrid-slot {
-    background-color: #f8fafc; /* sehr leichtes Grau */
+    background-color: #f8fafc;
 }
 
 /* Gleiche Färbung auch für die Zeit-Achse links */
 .rb-calendar .fc-timegrid-body tr:nth-child(even) .fc-timegrid-axis {
     background-color: #f1f5f9;
+}
+
+/* Vergangene Slots im Kalender grau / schraffiert & nicht klickbar */
+.rb-calendar .fc-past {
+    background-color: #f3f4f6;
+    background-image: repeating-linear-gradient(
+            135deg,
+            rgba(148, 163, 184, 0.35),
+            rgba(148, 163, 184, 0.35) 2px,
+            transparent 2px,
+            transparent 4px
+    );
+    pointer-events: none;
+}
+.app-root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f3f4f6;
+}
+
+.app-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px;
+}
+
+/* zentrierte „Card“ für den Kalender */
+.calendar-card {
+    width: 100%;
+    max-width: 1600px;        /* hier steuerst du die Breite */
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+    padding: 16px 20px 20px;
+}
+
+/* DateNavigator wie zuvor */
+.date-nav { /* ... bleibt wie definiert ... */ }
+
+/* Debug unten kleiner und zentriert */
+.debug-block {
+    margin-top: 16px;
+    font-size: 12px;
+    background-color: #e5e7eb;
+    padding: 8px;
+    border-radius: 4px;
+    white-space: pre-wrap;
+    width: 100%;
+    max-width: 1100px;
 }
