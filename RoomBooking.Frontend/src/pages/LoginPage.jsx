@@ -1,12 +1,10 @@
-// src/pages/LoginPage.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:5135";
 
 export default function LoginPage() {
     const navigate = useNavigate();
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
@@ -38,6 +36,7 @@ export default function LoginPage() {
 
             const data = await resp.json(); // { token }
             const token = data.token;
+            
             localStorage.setItem("jwt", token);
 
             navigate("/");

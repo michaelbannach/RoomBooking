@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import CalendarPage from "./pages/CalendarPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import ProtectedRoute from "./ProtectedRoute";
 
 export default function App() {
     const [currentView, setCurrentView] = useState("resourceTimeGridDay");
@@ -42,14 +43,14 @@ export default function App() {
                         <Route
                             path="/"
                             element={
-                                <CalendarPage
-                                    currentView={currentView}
-                                    currentDate={currentDate}
-                                    setCurrentDate={setCurrentDate}
-                                    calendarRef={calendarRef}
-                                    // optional: currentDate per Prop runterreichen,
-                                    // falls du den State ganz nach oben ziehen möchtest
-                                />
+                                <ProtectedRoute>
+                                    <CalendarPage
+                                        currentView={currentView}
+                                        currentDate={currentDate}
+                                        setCurrentDate={setCurrentDate}
+                                        calendarRef={calendarRef}
+                                    />
+                                </ProtectedRoute>
                             }
                         />
                         <Route path="/login" element={<LoginPage />} />

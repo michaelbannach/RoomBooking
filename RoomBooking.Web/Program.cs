@@ -42,18 +42,20 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = jwtSection["Issuer"],
         ValidAudience = jwtSection["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(key)
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
+            )
     };
 });
 
 builder.Services.AddCors(options =>
 {
-options.AddPolicy("Frontend", 
-    policy => policy
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-        .AllowCredentials()
-        .WithOrigins("http://localhost:4200"));
+    options.AddPolicy("Frontend", policy =>
+        policy
+            .WithOrigins("http://localhost:5173")  
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials());
 });
     
 builder.Services.AddScoped<IUserRepository, UserRepository>();

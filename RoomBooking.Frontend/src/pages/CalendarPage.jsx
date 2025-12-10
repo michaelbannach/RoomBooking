@@ -1,6 +1,5 @@
 // src/pages/CalendarPage.jsx
-import { useMemo, useRef, useState } from "react";
-import Navbar from "../components/Navbar";
+import { useMemo, useState } from "react";
 import DateNavigator from "../components/DateNavigator";
 import RoomCalendar from "../components/RoomCalendar";
 import BookingModal from "../components/BookingModal";
@@ -16,7 +15,7 @@ const getWeekRange = (date) => {
     return { monday, friday };
 };
 
-// ISO‑Kalenderwoche berechnen
+// ISO-Kalenderwoche berechnen
 const getWeekNumber = (date) => {
     const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
     const dayNum = d.getUTCDay() || 7;
@@ -26,7 +25,12 @@ const getWeekNumber = (date) => {
     return weekNo;
 };
 
-export default function CalendarPage({ currentView, currentDate, setCurrentDate, calendarRef}) {
+export default function CalendarPage({
+                                         currentView,
+                                         currentDate,
+                                         setCurrentDate,
+                                         calendarRef,
+                                     }) {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [events, setEvents] = useState([]);
     const [activeRoomId, setActiveRoomId] = useState("raum1");
@@ -35,6 +39,7 @@ export default function CalendarPage({ currentView, currentDate, setCurrentDate,
     const { monday, friday } = getWeekRange(currentDate);
     const currentWeekNumber = getWeekNumber(currentDate);
 
+    // statische Räume wie früher
     const resources = useMemo(
         () => [
             { id: "raum1", title: "Raum 1" },
@@ -44,11 +49,13 @@ export default function CalendarPage({ currentView, currentDate, setCurrentDate,
         []
     );
 
+    // in der Wochenansicht nur aktiven Raum zeigen
     const filteredResources =
-        currentView === "resourceTimeGridWeek"
+        isWeekView && activeRoomId
             ? resources.filter((r) => r.id === activeRoomId)
             : resources;
 
+    // Slot angeklickt -> neues Event, Modal öffnen
     const handleSlotSelect = ({ start, end, resource }) => {
         setSelectedEvent({
             id: null,
@@ -60,6 +67,7 @@ export default function CalendarPage({ currentView, currentDate, setCurrentDate,
         });
     };
 
+    // Bestehendes Event angeklickt -> Modal mit vorhandenen Daten öffnen
     const handleEventClick = (clickInfo) => {
         const evt = clickInfo.event;
         setSelectedEvent({
@@ -76,6 +84,7 @@ export default function CalendarPage({ currentView, currentDate, setCurrentDate,
 
     const handleCloseModal = () => setSelectedEvent(null);
 
+    // Bestätigen im Modal -> Event lokal anlegen/aktualisieren
     const handleConfirmBooking = ({ start, end }) => {
         if (!selectedEvent) return;
 
@@ -117,84 +126,75 @@ export default function CalendarPage({ currentView, currentDate, setCurrentDate,
     };
 
     return (
-        <div className="app-root">
-            
-            <main className="app-main">
-                <div className="calendar-card">
-                    <DateNavigator
-                        date={currentDate}
-                        onPrevDay={() => {
-                            const delta = isWeekView ? -7 : -1;
-                            const next = new Date(currentDate);
-                            next.setDate(currentDate.getDate() + delta);
-                            setCurrentDate(next);
-                            const api = calendarRef.current?.getApi?.();
-                            if (api) api.gotoDate(next);
-                        }}
-                        onNextDay={() => {
-                            const delta = isWeekView ? 7 : 1;
-                            const next = new Date(currentDate);
-                            next.setDate(currentDate.getDate() + delta);
-                            setCurrentDate(next);
-                            const api = calendarRef.current?.getApi?.();
-                            if (api) api.gotoDate(next);
-                        }}
-                        isWeekView={isWeekView}
-                        weekFrom={monday}
-                        weekTo={friday}
-                        weekNumber={currentWeekNumber}
-                        onPickDate={(picked) => {
-                            let next = new Date(picked);
+        <div className="calendar-card">
+            <DateNavigator
+                date={currentDate}
+                onPrevDay={() => {
+                    const delta = isWeekView ? -7 : -1;
+                    const next = new Date(currentDate);
+                    next.setDate(currentDate.getDate() + delta);
+                    setCurrentDate(next);
+                    const api = calendarRef.current?.getApi?.();
+                    if (api) api.gotoDate(next);
+                }}
+                onNextDay={() => {
+                    const delta = isWeekView ? 7 : 1;
+                    const next = new Date(currentDate);
+                    next.setDate(currentDate.getDate() + delta);
+                    setCurrentDate(next);
+                    const api = calendarRef.current?.getApi?.();
+                    if (api) api.gotoDate(next);
+                }}
+                isWeekView={isWeekView}
+                weekFrom={monday}
+                weekTo={friday}
+                weekNumber={currentWeekNumber}
+                onPickDate={(picked) => {
+                    let next = new Date(picked);
 
-                            if (isWeekView) {
-                                // auf Montag der gewählten Woche „einschnappen“
-                                const day = (next.getDay() + 6) % 7;
-                                next.setDate(next.getDate() - day);
+                    if (isWeekView) {
+                        // auf Montag der gewählten Woche „einschnappen“
+                        const day = (next.getDay() + 6) % 7;
+                        next.setDate(next.getDate() - day);
+                    }
+
+                    setCurrentDate(next);
+                    const api = calendarRef.current?.getApi?.();
+                    if (api) api.gotoDate(next); // FullCalendar springt auf diesen Tag/Woche
+                }}
+            />
+
+            {isWeekView && (
+                <div className="room-tabs">
+                    {resources.map((r) => (
+                        <button
+                            key={r.id}
+                            className={
+                                r.id === activeRoomId ? "room-tab active" : "room-tab"
                             }
-
-                            setCurrentDate(next);
-                            const api = calendarRef.current?.getApi?.();
-                            if (api) api.gotoDate(next);   // FullCalendar springt auf diesen Tag/Woche
-                        }}
-                    />
-
-                    {isWeekView && (
-                        <div className="room-tabs">
-                            {resources.map((r) => (
-                                <button
-                                    key={r.id}
-                                    className={
-                                        r.id === activeRoomId ? "room-tab active" : "room-tab"
-                                    }
-                                    onClick={() => setActiveRoomId(r.id)}
-                                >
-                                    {r.title}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-
-                    <RoomCalendar
-                        ref={calendarRef}
-                        currentDate={currentDate}
-                        resources={filteredResources}
-                        events={events}
-                        onEventClick={handleEventClick}
-                        onSlotSelect={handleSlotSelect}
-                    />
+                            onClick={() => setActiveRoomId(r.id)}
+                        >
+                            {r.title}
+                        </button>
+                    ))}
                 </div>
+            )}
 
-                <BookingModal
-                    event={selectedEvent}
-                    roomName={selectedEvent?.resourceTitle}
-                    onClose={handleCloseModal}
-                    onConfirm={handleConfirmBooking}
-                />
+            <RoomCalendar
+                ref={calendarRef}
+                currentDate={currentDate}
+                resources={filteredResources}
+                events={events}
+                onEventClick={handleEventClick}
+                onSlotSelect={handleSlotSelect}
+            />
 
-                <pre className="debug-block">
-          {JSON.stringify(selectedEvent, null, 2)}
-        </pre>
-            </main>
+            <BookingModal
+                event={selectedEvent}
+                roomName={selectedEvent?.resourceTitle}
+                onClose={handleCloseModal}
+                onConfirm={handleConfirmBooking}
+            />
         </div>
     );
 }

@@ -2,16 +2,18 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:5135";
 
 export default function RegisterPage() {
     const navigate = useNavigate();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
-    const [isSuperUser, setIsSuperUser] = useState(false);
+    
+    
     const [message, setMessage] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -20,7 +22,7 @@ export default function RegisterPage() {
         setMessage("");
         setIsSubmitting(true);
 
-        const role = isSuperUser ? "SuperUser" : "NormalUser";
+        
 
         try {
             const resp = await fetch(`${API_BASE}/api/auth/register`, {
@@ -31,12 +33,11 @@ export default function RegisterPage() {
                     password,
                     firstName,
                     lastName,
-                    role,
+                    
                 }),
             });
 
             if (!resp.ok) {
-                // Versuchen, eine aussagekräftige Fehlermeldung zu lesen
                 let msg = "Registrierung fehlgeschlagen";
                 try {
                     const data = await resp.json();
