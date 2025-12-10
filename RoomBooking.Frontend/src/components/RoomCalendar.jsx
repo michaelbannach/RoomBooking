@@ -9,20 +9,29 @@ const RoomCalendar = forwardRef(function RoomCalendar(
     { currentDate, resources, events, onEventClick, onSlotSelect },
     calendarRef
 ) {
-    // >>> HIER: Hilfsfunktion innerhalb der Komponente definieren
     const isPast = (date) => {
         const now = new Date();
         return date.getTime() < now.getTime();
     };
 
     return (
-        <div className="bg-white rounded-lg shadow overflow-hidden rb-calendar">
+        <div className="rb-calendar">
             <FullCalendar
                 ref={calendarRef}
                 plugins={[resourceTimeGridPlugin, timeGridPlugin, interactionPlugin]}
                 initialView="resourceTimeGridDay"
                 initialDate={currentDate}
                 headerToolbar={false}
+                views={{
+                    resourceTimeGridDay: {
+                        type: "resourceTimeGrid",
+                        duration: { days: 1 },
+                    },
+                    resourceTimeGridWeek: {
+                        type: "resourceTimeGrid",
+                        duration: { days: 7 },
+                    },
+                }}
                 slotLabelFormat={{
                     hour: "2-digit",
                     minute: "2-digit",
@@ -40,6 +49,7 @@ const RoomCalendar = forwardRef(function RoomCalendar(
                 slotDuration="00:30:00"
                 dateClick={(info) => {
                     if (!onSlotSelect) return;
+                    if (isPast(info.date)) return;
                     onSlotSelect({
                         start: info.date,
                         end: new Date(info.date.getTime() + 30 * 60 * 1000),
@@ -48,6 +58,7 @@ const RoomCalendar = forwardRef(function RoomCalendar(
                 }}
                 select={(info) => {
                     if (!onSlotSelect) return;
+                    if (isPast(info.start)) return;
                     onSlotSelect({
                         start: info.start,
                         end: info.end,
@@ -55,7 +66,6 @@ const RoomCalendar = forwardRef(function RoomCalendar(
                     });
                 }}
             />
-
         </div>
     );
 });

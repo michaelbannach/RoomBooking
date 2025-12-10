@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 
-export default function Navbar() {
+export default function Navbar({ currentView, onChangeView }) {
     return (
         <AppBar position="static" color="primary" elevation={1}>
             <Toolbar>
@@ -18,14 +18,22 @@ export default function Navbar() {
                 </Typography>
 
                 <Box sx={{ display: "flex", gap: 1 }}>
-                    <Button color="inherit" size="small">
+                    <Button
+                        color="inherit"
+                        size="small"
+                        variant={currentView === "resourceTimeGridDay" ? "outlined" : "text"}
+                        onClick={() => onChangeView("resourceTimeGridDay")}
+                    >
                         Tagesansicht
                     </Button>
-                    <Button color="inherit" size="small">
+
+                    <Button
+                        color="inherit"
+                        size="small"
+                        variant={currentView === "resourceTimeGridWeek" ? "outlined" : "text"}
+                        onClick={() => onChangeView("resourceTimeGridWeek")}
+                    >
                         Wochenansicht
-                    </Button>
-                    <Button variant="outlined" color="inherit" size="small">
-                        Jetzt buchen
                     </Button>
                 </Box>
             </Toolbar>

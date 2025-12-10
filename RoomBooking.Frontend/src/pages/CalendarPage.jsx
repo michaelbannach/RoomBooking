@@ -10,6 +10,8 @@ export default function CalendarPage() {
     const calendarRef = useRef(null);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [events, setEvents] = useState([]);
+    const [currentView, setCurrentView] = useState("resourceTimeGridDay");
+    const [activeRoomId, setActiveRoomId] = useState("raum1");
 
     const resources = useMemo(
         () => [
@@ -20,6 +22,11 @@ export default function CalendarPage() {
         []
     );
 
+    const filteredResources =
+        currentView === "resourceTimeGridWeek"
+            ? resources.filter((r) => r.id === activeRoomId)
+            : resources;
+    
     const handleSlotSelect = ({ start, end, resource }) => {
         setSelectedEvent({
             id: null, // null => neue Buchung
@@ -96,7 +103,14 @@ export default function CalendarPage() {
 
     return (
         <div className="app-root">
-            <Navbar />
+            <Navbar
+                currentView={currentView}
+                onChangeView={(view) => {
+                    setCurrentView(view);
+                    const api = calendarRef.current?.getApi?.();
+                    if (api) api.changeView(view);
+                }}
+            />
 
             <main className="app-main">
                 <div className="calendar-card">
@@ -121,11 +135,24 @@ export default function CalendarPage() {
                             })
                         }
                     />
-
+                    {currentView === "resourceTimeGridWeek" && (
+                        <div className="room-tabs">
+                            {resources.map((r) => (
+                                <button
+                                    key={r.id}
+                                    className={r.id === activeRoomId ? "room-tab active" : "room-tab"}
+                                    onClick={() => setActiveRoomId(r.id)}
+                                >
+                                    {r.title}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                    
                     <RoomCalendar
                         ref={calendarRef}
                         currentDate={currentDate}
-                        resources={resources}
+                        resources={filteredResources}
                         events={events}
                         onEventClick={handleEventClick}
                         onSlotSelect={handleSlotSelect}
