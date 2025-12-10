@@ -5,13 +5,35 @@ import DateNavigator from "../components/DateNavigator";
 import RoomCalendar from "../components/RoomCalendar";
 import BookingModal from "../components/BookingModal";
 
-export default function CalendarPage() {
-    const [currentDate, setCurrentDate] = useState(new Date());
-    const calendarRef = useRef(null);
+// Wochenbereich (Mo–Fr) aus einem Datum berechnen
+const getWeekRange = (date) => {
+    const d = new Date(date);
+    const day = (d.getDay() + 6) % 7; // Montag = 0
+    const monday = new Date(d);
+    monday.setDate(d.getDate() - day);
+    const friday = new Date(monday);
+    friday.setDate(monday.getDate() + 4);
+    return { monday, friday };
+};
+
+// ISO‑Kalenderwoche berechnen
+const getWeekNumber = (date) => {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    const weekNo = Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+    return weekNo;
+};
+
+export default function CalendarPage({ currentView, currentDate, setCurrentDate, calendarRef}) {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [events, setEvents] = useState([]);
-    const [currentView, setCurrentView] = useState("resourceTimeGridDay");
     const [activeRoomId, setActiveRoomId] = useState("raum1");
+
+    const isWeekView = currentView === "resourceTimeGridWeek";
+    const { monday, friday } = getWeekRange(currentDate);
+    const currentWeekNumber = getWeekNumber(currentDate);
 
     const resources = useMemo(
         () => [
@@ -26,10 +48,10 @@ export default function CalendarPage() {
         currentView === "resourceTimeGridWeek"
             ? resources.filter((r) => r.id === activeRoomId)
             : resources;
-    
+
     const handleSlotSelect = ({ start, end, resource }) => {
         setSelectedEvent({
-            id: null, // null => neue Buchung
+            id: null,
             title: "",
             start,
             end,
@@ -71,7 +93,6 @@ export default function CalendarPage() {
 
         setEvents((prev) => {
             if (!selectedEvent.id) {
-                // Neue Buchung
                 const newId = (prev.length + 1).toString();
                 return [
                     ...prev,
@@ -84,15 +105,9 @@ export default function CalendarPage() {
                     },
                 ];
             } else {
-                // bestehende Buchung aktualisieren
                 return prev.map((e) =>
                     e.id === selectedEvent.id
-                        ? {
-                            ...e,
-                            title: newTitle,
-                            start: startDate,
-                            end: endDate,
-                        }
+                        ? { ...e, title: newTitle, start: startDate, end: endDate }
                         : e
                 );
             }
@@ -103,44 +118,54 @@ export default function CalendarPage() {
 
     return (
         <div className="app-root">
-            <Navbar
-                currentView={currentView}
-                onChangeView={(view) => {
-                    setCurrentView(view);
-                    const api = calendarRef.current?.getApi?.();
-                    if (api) api.changeView(view);
-                }}
-            />
-
+            
             <main className="app-main">
                 <div className="calendar-card">
                     <DateNavigator
                         date={currentDate}
-                        onPrevDay={() =>
-                            setCurrentDate((prev) => {
-                                const next = new Date(prev);
-                                next.setDate(prev.getDate() - 1);
-                                const api = calendarRef.current?.getApi?.();
-                                if (api) api.gotoDate(next);
-                                return next;
-                            })
-                        }
-                        onNextDay={() =>
-                            setCurrentDate((prev) => {
-                                const next = new Date(prev);
-                                next.setDate(prev.getDate() + 1);
-                                const api = calendarRef.current?.getApi?.();
-                                if (api) api.gotoDate(next);
-                                return next;
-                            })
-                        }
+                        onPrevDay={() => {
+                            const delta = isWeekView ? -7 : -1;
+                            const next = new Date(currentDate);
+                            next.setDate(currentDate.getDate() + delta);
+                            setCurrentDate(next);
+                            const api = calendarRef.current?.getApi?.();
+                            if (api) api.gotoDate(next);
+                        }}
+                        onNextDay={() => {
+                            const delta = isWeekView ? 7 : 1;
+                            const next = new Date(currentDate);
+                            next.setDate(currentDate.getDate() + delta);
+                            setCurrentDate(next);
+                            const api = calendarRef.current?.getApi?.();
+                            if (api) api.gotoDate(next);
+                        }}
+                        isWeekView={isWeekView}
+                        weekFrom={monday}
+                        weekTo={friday}
+                        weekNumber={currentWeekNumber}
+                        onPickDate={(picked) => {
+                            let next = new Date(picked);
+
+                            if (isWeekView) {
+                                // auf Montag der gewählten Woche „einschnappen“
+                                const day = (next.getDay() + 6) % 7;
+                                next.setDate(next.getDate() - day);
+                            }
+
+                            setCurrentDate(next);
+                            const api = calendarRef.current?.getApi?.();
+                            if (api) api.gotoDate(next);   // FullCalendar springt auf diesen Tag/Woche
+                        }}
                     />
-                    {currentView === "resourceTimeGridWeek" && (
+
+                    {isWeekView && (
                         <div className="room-tabs">
                             {resources.map((r) => (
                                 <button
                                     key={r.id}
-                                    className={r.id === activeRoomId ? "room-tab active" : "room-tab"}
+                                    className={
+                                        r.id === activeRoomId ? "room-tab active" : "room-tab"
+                                    }
                                     onClick={() => setActiveRoomId(r.id)}
                                 >
                                     {r.title}
@@ -148,7 +173,7 @@ export default function CalendarPage() {
                             ))}
                         </div>
                     )}
-                    
+
                     <RoomCalendar
                         ref={calendarRef}
                         currentDate={currentDate}

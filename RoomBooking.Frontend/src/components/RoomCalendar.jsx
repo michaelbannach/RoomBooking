@@ -13,6 +13,25 @@ const RoomCalendar = forwardRef(function RoomCalendar(
         const now = new Date();
         return date.getTime() < now.getTime();
     };
+    
+    const getWeekRange = (date) => {
+        const d = new Date(date);
+        const day = (d.getDay() + 6) % 7;   // Montag = 0
+        const monday = new Date(d);
+        monday.setDate(d.getDate() - day);
+        const friday = new Date(monday);
+        friday.setDate(monday.getDate() + 4);
+        return { monday, friday };
+    };
+
+    const getWeekNumber = (date) => {
+        const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+        const dayNum = d.getUTCDay() || 7;
+        d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+        const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+        const weekNo = Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+        return weekNo;
+    };
 
     return (
         <div className="rb-calendar">
@@ -29,9 +48,11 @@ const RoomCalendar = forwardRef(function RoomCalendar(
                     },
                     resourceTimeGridWeek: {
                         type: "resourceTimeGrid",
-                        duration: { days: 7 },
+                        duration: { days: 5 },      
                     },
                 }}
+                firstDay={1}                     
+                locale="de"
                 slotLabelFormat={{
                     hour: "2-digit",
                     minute: "2-digit",
