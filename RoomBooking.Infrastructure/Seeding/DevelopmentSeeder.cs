@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using RoomBooking.Infrastructure.Data;
 using RoomBooking.Infrastructure.Models;
@@ -9,55 +8,56 @@ namespace RoomBooking.Infrastructure.Seeding;
 
 public static class DevelopmentSeeder
 {
-   
     private static bool _initialized;
     private static readonly object _lock = new();
 
     public static async Task SeedAsync(IServiceProvider services)
     {
+        
         if (_initialized) return;
         lock (_lock)
         {
             if (_initialized) return;
             _initialized = true;
         }
-        
 
         using var scope = services.CreateScope();
 
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-        // 1) ROOM seeden
+       
         if (!await db.Rooms.AnyAsync())
         {
-            
-            
-            await db.Rooms.AddAsync(new Room
+            var rooms = new List<Room>
             {
-                Name = "Raum 1",
-                Capacity = 12
-            });
+                new Room { Name = "Raum 1", Capacity = 12 },
+                new Room { Name = "Raum 2", Capacity = 8 },
+                new Room { Name = "Raum 3", Capacity = 20 }
+            };
 
+            await db.Rooms.AddRangeAsync(rooms);
             await db.SaveChangesAsync();
         }
 
-        var roomId = await db.Rooms
+       
+        var firstRoomId = await db.Rooms
+            .OrderBy(r => r.Id)
             .Select(r => r.Id)
             .FirstAsync();
 
-        
-        const string userName = "seed_admin";         
+       
         const string email    = "seed_admin@test.local";
+        const string userName = email;        // Username = Email (konsistent zu deinem Login)
         const string password = "Test123!";
 
-        var existingIdentityUser =
-            await userManager.FindByNameAsync(userName)
-            ?? await userManager.FindByEmailAsync(email);
+        var identityUser =
+            await userManager.FindByEmailAsync(email)
+            ?? await userManager.FindByNameAsync(userName);
 
-        if (existingIdentityUser == null)
+        if (identityUser == null)
         {
-            var user = new ApplicationUser
+            identityUser = new ApplicationUser
             {
                 UserName = userName,
                 Email = email,
@@ -65,58 +65,31 @@ public static class DevelopmentSeeder
                 PhoneNumber = "0000000000"
             };
 
-            try
-            {
-                var result = await userManager.CreateAsync(user, password);
+            var result = await userManager.CreateAsync(identityUser, password);
 
-                if (result.Succeeded)
-                {
-                    existingIdentityUser = user;
-                }
-                else if (result.Errors.Any(e =>
-                             e.Code == "DuplicateUserName" ||
-                             e.Code == "DuplicateEmail"))
-                {
-                    
-                    existingIdentityUser =
-                        await userManager.FindByNameAsync(userName)
-                        ?? await userManager.FindByEmailAsync(email);
-                }
-                else
-                {
-                    throw new Exception(
-                        "ApplicationUser couldn´t be created: " +
-                        string.Join(", ", result.Errors.Select(e => e.Description)));
-                }
-            }
-            catch (DbUpdateException ex) when (
-                ex.InnerException is SqlException sqlEx &&
-                sqlEx.Message.Contains("UserNameIndex", StringComparison.OrdinalIgnoreCase))
+            if (!result.Succeeded)
             {
-              
-                existingIdentityUser =
-                    await userManager.FindByNameAsync(userName)
-                    ?? await userManager.FindByEmailAsync(email);
+                var errorText = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new Exception($"Seeding of admin user failed: {errorText}");
             }
         }
 
-        
-        var existingDomainUser = await db.Users
-            .FirstOrDefaultAsync(u => u.IdentityUserId == existingIdentityUser!.Id);
+       
+        var domainUser = await db.Users
+            .FirstOrDefaultAsync(u => u.IdentityUserId == identityUser.Id);
 
-        if (existingDomainUser == null)
+        if (domainUser == null)
         {
-            existingDomainUser = new User
+            domainUser = new User
             {
-                IdentityUserId = existingIdentityUser.Id,
+                IdentityUserId = identityUser.Id,
                 FirstName = "Test",
                 LastName = "User"
             };
 
-            db.Users.Add(existingDomainUser);
+            db.Users.Add(domainUser);
             await db.SaveChangesAsync();
         }
-
         
         if (!await db.Bookings.AnyAsync())
         {
@@ -124,8 +97,8 @@ public static class DevelopmentSeeder
             {
                 StartDate = DateTime.Today.AddHours(10),
                 EndDate = DateTime.Today.AddHours(12),
-                UserId = existingDomainUser.Id,
-                RoomId = roomId
+                UserId = domainUser.Id,
+                RoomId = firstRoomId
             });
 
             await db.SaveChangesAsync();

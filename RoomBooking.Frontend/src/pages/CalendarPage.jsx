@@ -26,33 +26,6 @@ const getWeekNumber = (date) => {
     return weekNo;
 };
 
-// Mapping zwischen Frontend-Resource-ID und Room.Id in der DB
-const mapResourceIdToRoomId = (resourceId) => {
-    switch (resourceId) {
-        case "raum1":
-            return 6; // DB: Rooms.Id = 6
-        case "raum2":
-            return 7; // DB: Rooms.Id = 7
-        case "raum3":
-            return 8; // DB: Rooms.Id = 8
-        default:
-            return null;
-    }
-};
-
-const mapRoomIdToResourceId = (roomId) => {
-    switch (roomId) {
-        case 6:
-            return "raum1";
-        case 7:
-            return "raum2";
-        case 8:
-            return "raum3";
-        default:
-            return null;
-    }
-};
-
 function getUserIdFromToken() {
     const token = localStorage.getItem("jwt");
     if (!token) return null;
@@ -61,7 +34,7 @@ function getUserIdFromToken() {
     try {
         const json = JSON.parse(atob(payload));
         return json.userId ? parseInt(json.userId, 10) : null;
-    } catch (e) {
+    } catch {
         return null;
     }
 }
@@ -74,20 +47,47 @@ export default function CalendarPage({
                                      }) {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [events, setEvents] = useState([]);
-    const [activeRoomId, setActiveRoomId] = useState("raum1");
+    const [rooms, setRooms] = useState([]);
+    const [activeRoomId, setActiveRoomId] = useState(null);
 
     const isWeekView = currentView === "resourceTimeGridWeek";
     const { monday, friday } = getWeekRange(currentDate);
     const currentWeekNumber = getWeekNumber(currentDate);
 
-    // statische Räume wie bisher
+    // Räume aus dem Backend laden
+    useEffect(() => {
+        const loadRooms = async () => {
+            try {
+                const resp = await authFetch("/api/room", { method: "GET" });
+                if (!resp.ok) {
+                    console.error("Fehler beim Laden der Räume");
+                    return;
+                }
+                const data = await resp.json(); // RoomDto[]
+                setRooms(data);
+            } catch (err) {
+                console.error("Fehler beim Laden der Räume", err);
+            }
+        };
+
+        loadRooms();
+    }, []);
+
+    // Aktiven Raum initial auf den ersten Raum setzen
+    useEffect(() => {
+        if (!activeRoomId && rooms.length > 0) {
+            setActiveRoomId(String(rooms[0].id));
+        }
+    }, [rooms, activeRoomId]);
+
+    // Ressourcen für FullCalendar aus DB-Räumen ableiten
     const resources = useMemo(
-        () => [
-            { id: "raum1", title: "Raum 1" },
-            { id: "raum2", title: "Raum 2" },
-            { id: "raum3", title: "Raum 3" },
-        ],
-        []
+        () =>
+            rooms.map((r) => ({
+                id: String(r.id), // Resource-ID = Room.Id als String
+                title: r.name,
+            })),
+        [rooms]
     );
 
     const filteredResources =
@@ -120,16 +120,14 @@ export default function CalendarPage({
                 const mapped = data.map((b) => {
                     const start = new Date(b.startDate);
                     const end = new Date(b.endDate);
-                    const resourceId = mapRoomIdToResourceId(b.roomId);
 
                     return {
                         id: String(b.id),
                         title: buildTitle(start, end),
                         start,
                         end,
-                        resourceId,
-                        resourceTitle: resources.find((r) => r.id === resourceId)?.title,
-                        userId: b.userId, // Besitzer der Buchung merken
+                        resourceId: String(b.roomId), // direkte Abbildung aus DB
+                        userId: b.userId,
                     };
                 });
 
@@ -140,8 +138,7 @@ export default function CalendarPage({
         };
 
         loadBookings();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // nur einmal beim Mount
+    }, []);
 
     const handleSlotSelect = ({ start, end, resource }) => {
         setSelectedEvent({
@@ -160,10 +157,12 @@ export default function CalendarPage({
         const eventUserId = evt.extendedProps.userId;
         const currentUserId = getUserIdFromToken();
 
-        // Fremde Buchungen: nichts tun
         if (!currentUserId || eventUserId !== currentUserId) {
+            // Fremde Buchungen sind nur sichtbar, aber nicht editierbar
             return;
         }
+
+        const resourceFromEvent = evt.getResources?.()[0];
 
         setSelectedEvent({
             id: evt.id,
@@ -171,9 +170,9 @@ export default function CalendarPage({
             start: evt.start,
             end: evt.end,
             resourceId:
-                evt.getResources?.()[0]?.id ?? evt.extendedProps.resourceId,
+                resourceFromEvent?.id ?? evt.extendedProps.resourceId,
             resourceTitle:
-                evt.getResources?.()[0]?.title ?? evt.extendedProps.resourceTitle,
+                resourceFromEvent?.title ?? evt.extendedProps.resourceTitle,
             userId: eventUserId,
         });
     };
@@ -187,8 +186,8 @@ export default function CalendarPage({
         const startDate = start instanceof Date ? start : new Date(start);
         const endDate = end instanceof Date ? end : new Date(end);
 
-        const roomId = mapResourceIdToRoomId(selectedEvent.resourceId);
-        if (!roomId) {
+        const roomId = parseInt(selectedEvent.resourceId, 10);
+        if (!roomId || Number.isNaN(roomId)) {
             console.error(
                 "Kein gültiger Raum für die Buchung vorhanden (resourceId:",
                 selectedEvent.resourceId,
@@ -222,7 +221,6 @@ export default function CalendarPage({
                 }
 
                 const created = await resp.json(); // BookingDto
-                const resourceId = mapRoomIdToResourceId(created.roomId);
                 const startFromServer = new Date(created.startDate);
                 const endFromServer = new Date(created.endDate);
 
@@ -231,8 +229,9 @@ export default function CalendarPage({
                     title: buildTitle(startFromServer, endFromServer),
                     start: startFromServer,
                     end: endFromServer,
-                    resourceId,
-                    resourceTitle: resources.find((r) => r.id === resourceId)?.title,
+                    resourceId: String(created.roomId),
+                    resourceTitle:
+                    resources.find((r) => r.id === String(created.roomId))?.title,
                     userId: created.userId,
                 };
 
@@ -262,7 +261,6 @@ export default function CalendarPage({
                 }
 
                 const updated = await resp.json(); // BookingDto
-                const resourceId = mapRoomIdToResourceId(updated.roomId);
                 const startFromServer = new Date(updated.startDate);
                 const endFromServer = new Date(updated.endDate);
 
@@ -271,8 +269,9 @@ export default function CalendarPage({
                     title: buildTitle(startFromServer, endFromServer),
                     start: startFromServer,
                     end: endFromServer,
-                    resourceId,
-                    resourceTitle: resources.find((r) => r.id === resourceId)?.title,
+                    resourceId: String(updated.roomId),
+                    resourceTitle:
+                    resources.find((r) => r.id === String(updated.roomId))?.title,
                     userId: updated.userId,
                 };
 
@@ -349,7 +348,7 @@ export default function CalendarPage({
 
                             setCurrentDate(next);
                             const api = calendarRef.current?.getApi?.();
-                            if (api) api.gotoDate(next); // FullCalendar springt auf diesen Tag/Woche
+                            if (api) api.gotoDate(next);
                         }}
                     />
 
@@ -384,7 +383,7 @@ export default function CalendarPage({
                     roomName={selectedEvent?.resourceTitle}
                     onClose={handleCloseModal}
                     onConfirm={handleConfirmBooking}
-                    onDelete={handleDeleteBooking} // neu
+                    onDelete={handleDeleteBooking}
                 />
             </main>
         </div>

@@ -58,25 +58,26 @@ public class AuthService : IAuthService
         return (true, null, token);
     }
 
-    public async Task<(bool success, string? error, string? appUserId, int? userId)> RegisterAsync(string email, string password, string firstName, string lastName)
+    public async Task<(bool success, string? error, string? appUserId, int? userId)>
+        RegisterAsync(string email, string password, string firstName, string lastName)
     {
+        // 1) Identity-User vorbereiten
         var appUser = new ApplicationUser
         {
             UserName = email,
             Email = email
         };
 
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync();
-
+        // 2) Identity-User anlegen
         var identityResult = await _userManager.CreateAsync(appUser, password);
         if (!identityResult.Succeeded)
         {
             var errorText = string.Join("; ", identityResult.Errors.Select(e => e.Description));
             _logger.LogWarning("RegisterAsync: Failed to create Identity-User: {Errors}", errorText);
-            await transaction.RollbackAsync();
             return (false, errorText, null, null);
         }
 
+        // 3) Domain-User in unserer eigenen Users-Tabelle anlegen
         var (success, error, user) = await _userService.CreateUserAsync(
             appUser.Id,
             firstName,
@@ -85,13 +86,12 @@ public class AuthService : IAuthService
         if (!success || user == null)
         {
             _logger.LogError("RegisterAsync: Failed to create domain user: {Error}", error);
+            // Identity-User wieder aufräumen, damit kein „toter“ Eintrag übrig bleibt
             await _userManager.DeleteAsync(appUser);
-            await transaction.RollbackAsync();
             return (false, error ?? "Failed to create domain user", null, null);
         }
 
-        await transaction.CommitAsync();
-
+        // 4) Erfolg – beide User existieren
         return (true, null, appUser.Id, user.Id);
     }
 
