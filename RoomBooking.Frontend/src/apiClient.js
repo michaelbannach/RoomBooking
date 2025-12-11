@@ -15,10 +15,6 @@ export async function authFetch(path, options = {}) {
         headers,
     });
 
-    // Optional: zentrale Behandlung von 401
-    // if (response.status === 401) {
-    //     window.location.href = "/login";
-    // }
 
     return response;
 }

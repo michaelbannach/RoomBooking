@@ -19,7 +19,13 @@ const MAX_HOUR = 20;
 
 const pad2 = (n) => String(n).padStart(2, "0");
 
-export default function BookingModal({ event, roomName, onClose, onConfirm }) {
+export default function BookingModal({
+                                         event,
+                                         roomName,
+                                         onClose,
+                                         onConfirm,
+                                         onDelete,
+                                     }) {
     if (!event) return null;
 
     const startDate =
@@ -98,6 +104,11 @@ export default function BookingModal({ event, roomName, onClose, onConfirm }) {
         onConfirm && onConfirm({ start, end });
     };
 
+    const handleDelete = () => {
+        if (!event?.id) return;
+        onDelete && onDelete(event.id);
+    };
+
     const displayDate = new Intl.DateTimeFormat("de-DE", {
         weekday: "long",
         day: "2-digit",
@@ -105,9 +116,13 @@ export default function BookingModal({ event, roomName, onClose, onConfirm }) {
         year: "numeric",
     }).format(startDate);
 
+    const isEdit = !!event.id;
+
     return (
         <Dialog open={!!event} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>Buchung</DialogTitle>
+            <DialogTitle>
+                {isEdit ? "Buchung bearbeiten" : "Neue Buchung"}
+            </DialogTitle>
             <DialogContent dividers>
                 <Box mb={2}>
                     <Typography variant="subtitle2">
@@ -216,8 +231,19 @@ export default function BookingModal({ event, roomName, onClose, onConfirm }) {
                 <Button variant="outlined" onClick={onClose}>
                     Abbrechen
                 </Button>
+
+                {isEdit && (
+                    <Button
+                        variant="outlined"
+                        color="error"
+                        onClick={handleDelete}
+                    >
+                        Löschen
+                    </Button>
+                )}
+
                 <Button variant="contained" onClick={handleSave}>
-                    Buchen
+                    {isEdit ? "Speichern" : "Buchen"}
                 </Button>
             </DialogActions>
         </Dialog>
