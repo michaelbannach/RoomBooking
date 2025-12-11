@@ -102,10 +102,9 @@ export default function CalendarPage({
             hour12: false,
         });
 
-    const buildTitle = (startDate, endDate) =>
-        `${formatTime(startDate)}–${formatTime(endDate)}`;
+    const buildTitle = () => "Gebucht";
 
-    // 1) Beim Laden: alle Bookings vom Backend holen und in Events umwandeln
+    
     useEffect(() => {
         const loadBookings = async () => {
             try {
@@ -115,7 +114,7 @@ export default function CalendarPage({
                     return;
                 }
 
-                const data = await resp.json(); // BookingDto[]
+                const data = await resp.json(); 
 
                 const mapped = data.map((b) => {
                     const start = new Date(b.startDate);
@@ -126,7 +125,7 @@ export default function CalendarPage({
                         title: buildTitle(start, end),
                         start,
                         end,
-                        resourceId: String(b.roomId), // direkte Abbildung aus DB
+                        resourceId: String(b.roomId), 
                         userId: b.userId,
                     };
                 });
@@ -151,14 +150,14 @@ export default function CalendarPage({
         });
     };
 
-    // Nur eigene Buchungen dürfen das Modal öffnen
+   
     const handleEventClick = (clickInfo) => {
         const evt = clickInfo.event;
         const eventUserId = evt.extendedProps.userId;
         const currentUserId = getUserIdFromToken();
 
         if (!currentUserId || eventUserId !== currentUserId) {
-            // Fremde Buchungen sind nur sichtbar, aber nicht editierbar
+          
             return;
         }
 
@@ -179,7 +178,7 @@ export default function CalendarPage({
 
     const handleCloseModal = () => setSelectedEvent(null);
 
-    // 2) Speichern im Modal -> POST/PUT gegen Backend
+ 
     const handleConfirmBooking = async ({ start, end }) => {
         if (!selectedEvent) return;
 
@@ -199,7 +198,7 @@ export default function CalendarPage({
 
         try {
             if (!selectedEvent.id) {
-                // NEUE Buchung -> POST /api/booking
+               
                 const createDto = {
                     startDate,
                     endDate,

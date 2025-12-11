@@ -36,6 +36,7 @@ const RoomCalendar = forwardRef(function RoomCalendar(
     return (
         <div className="rb-calendar">
             <FullCalendar
+                schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
                 ref={calendarRef}
                 plugins={[resourceTimeGridPlugin, timeGridPlugin, interactionPlugin]}
                 initialView="resourceTimeGridDay"
