@@ -58,7 +58,7 @@ RoomBooking.Infrastructure     → EF Core, Identity, DB-Kontext
 RoomBooking.Domain             → Domain Modelle
 ```
 Diese Layer-Trennung sorgt für testbaren, erweiterbaren und wartbaren Code.
-**Abhängigkeiten zeichen nach innen**
+**Abhängigkeiten zeigen nach innen**
 
 ---
 
