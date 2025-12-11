@@ -77,8 +77,6 @@ Diese Layer-Trennung sorgt für testbaren, erweiterbaren und wartbaren Code.
 
 ## Quickstart
 
-## Quickstart
-
 **Projekt klonen**
 ```
 git clone
