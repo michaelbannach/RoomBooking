@@ -46,6 +46,9 @@ Ziel der Anwendung ist es, ein einfaches, modernes und intuitives Raum-Buchungss
 ---
 
 ## Architektur
+
+<img src="docs/screenshots/Architekturdiagramm.png" width="350px">
+
 ```
 RoomBooking.Web                → Controller, Endpoints, Program/DI, DTOs, Mapping
 RoomBooking.Application        → Services, Interfaces
@@ -111,7 +114,22 @@ npm run dev
 
 <img src="docs/screenshots/BuchungBearbeiten.png" width="350px">
 
+---
 
+## Motivtation & Lernziele
 
+Das Projekt wurde erstellt, um praktische Erfahrung mit Full-Stack Entwicklung zu sammeln:
+- Aufbau einer mehrschichtigen Architektur
+- Praktische Erfahrung mit Entity Framework Core
+- Sicheres User-Management mittels Identity & JWT
+- Aufbau eines Raum-Buchungssystems
+- Arbeiten mit FullCalendar Scheduler & Ressourcen
+- Produktionstauglicher Docker-Workflow
 
+Die Anwendung dient sowohl als Lernprojekt als auch als solide Grundlage für produktive Raum- oder Ressourcenverwaltungssysteme.
 
+---
+
+## Lizenz
+Dieses Projekt ist kostenlos für nicht-kommerzielle Nutzung.
+Wenn der FullCalendar Scheduler verwendet wird, gilt die „CC-Attribution-NonCommercial-NoDerivatives“-Lizenz.
