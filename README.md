@@ -47,7 +47,9 @@ Ziel der Anwendung ist es, ein einfaches, modernes und intuitives Raum-Buchungss
 
 ## Architektur
 
+<p align="center">
 <img src="docs/screenshots/Architekturdiagramm.png" width="350px">
+</p>
 
 ```
 RoomBooking.Web                → Controller, Endpoints, Program/DI, DTOs, Mapping
@@ -130,6 +132,14 @@ Die Anwendung dient sowohl als Lernprojekt als auch als solide Grundlage für pr
 
 ---
 
+## Autor
+
+**Name:** Michael Bannach
+**Rolle:** angehender Softwareentwickler
+
+
+---
+
 ## Lizenz
-Dieses Projekt ist kostenlos für nicht-kommerzielle Nutzung.
-Wenn der FullCalendar Scheduler verwendet wird, gilt die „CC-Attribution-NonCommercial-NoDerivatives“-Lizenz.
+Für FullCalendar Scheduler wird der offizielle kostenlose 
+„CC-Attribution-NonCommercial-NoDerivatives“-Lizenzschlüssel verwendet.
