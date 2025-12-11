@@ -1,14 +1,13 @@
-// src/pages/CalendarPage.jsx
 import { useMemo, useState, useEffect } from "react";
 import DateNavigator from "../components/DateNavigator";
 import RoomCalendar from "../components/RoomCalendar";
 import BookingModal from "../components/BookingModal";
 import { authFetch } from "../apiClient";
 
-// Wochenbereich (Mo–Fr) aus einem Datum berechnen
+
 const getWeekRange = (date) => {
     const d = new Date(date);
-    const day = (d.getDay() + 6) % 7; // Montag = 0
+    const day = (d.getDay() + 6) % 7; 
     const monday = new Date(d);
     monday.setDate(d.getDate() - day);
     const friday = new Date(monday);
@@ -16,7 +15,7 @@ const getWeekRange = (date) => {
     return { monday, friday };
 };
 
-// ISO-Kalenderwoche berechnen
+
 const getWeekNumber = (date) => {
     const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
     const dayNum = d.getUTCDay() || 7;
@@ -54,7 +53,6 @@ export default function CalendarPage({
     const { monday, friday } = getWeekRange(currentDate);
     const currentWeekNumber = getWeekNumber(currentDate);
 
-    // Räume aus dem Backend laden
     useEffect(() => {
         const loadRooms = async () => {
             try {
@@ -63,7 +61,7 @@ export default function CalendarPage({
                     console.error("Fehler beim Laden der Räume");
                     return;
                 }
-                const data = await resp.json(); // RoomDto[]
+                const data = await resp.json();
                 setRooms(data);
             } catch (err) {
                 console.error("Fehler beim Laden der Räume", err);
@@ -72,19 +70,17 @@ export default function CalendarPage({
 
         loadRooms();
     }, []);
-
-    // Aktiven Raum initial auf den ersten Raum setzen
+    
     useEffect(() => {
         if (!activeRoomId && rooms.length > 0) {
             setActiveRoomId(String(rooms[0].id));
         }
     }, [rooms, activeRoomId]);
-
-    // Ressourcen für FullCalendar aus DB-Räumen ableiten
+    
     const resources = useMemo(
         () =>
             rooms.map((r) => ({
-                id: String(r.id), // Resource-ID = Room.Id als String
+                id: String(r.id), 
                 title: r.name,
             })),
         [rooms]

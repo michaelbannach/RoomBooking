@@ -40,12 +40,7 @@ namespace RoomBooking.Infrastructure.Repositories
 
         public async Task<bool> UpdateBookingAsync(Booking booking)
         {
-            /*
-            _context.Bookings.Update(booking);
-            return await _context.SaveChangesAsync() > 0;
-            NICHT MEHR VERWENDEN - SO ENTSTEHEN TRACKING-KONFLIKTE ODER EXCEPTIONS
-            STATTDESSEN DIREKT MIT ENTITY ARBEITEN
-            */
+            
             var existing = await _context.Bookings.FindAsync(booking.Id);
             if (existing == null)
                 return false;

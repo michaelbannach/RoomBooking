@@ -1,4 +1,3 @@
-// src/components/RoomCalendar.jsx
 import FullCalendar from "@fullcalendar/react";
 import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -16,7 +15,7 @@ const RoomCalendar = forwardRef(function RoomCalendar(
     
     const getWeekRange = (date) => {
         const d = new Date(date);
-        const day = (d.getDay() + 6) % 7;   // Montag = 0
+        const day = (d.getDay() + 6) % 7;   
         const monday = new Date(d);
         monday.setDate(d.getDate() - day);
         const friday = new Date(monday);

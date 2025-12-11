@@ -48,7 +48,7 @@ public static class DevelopmentSeeder
 
        
         const string email    = "seed_admin@test.local";
-        const string userName = email;        // Username = Email (konsistent zu deinem Login)
+        const string userName = email;        
         const string password = "Test123!";
 
         var identityUser =

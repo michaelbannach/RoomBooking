@@ -1,4 +1,3 @@
-// src/App.jsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useRef, useState } from "react";
 import Navbar from "./components/Navbar";
@@ -16,9 +15,9 @@ export default function App() {
         let nextDate = currentDate;
 
         if (view === "resourceTimeGridWeek") {
-            // beim Wechsel in Wochenansicht: auf Montag der aktuellen Woche
+           
             const d = new Date(currentDate);
-            const day = (d.getDay() + 6) % 7; // Montag = 0
+            const day = (d.getDay() + 6) % 7; 
             d.setDate(d.getDate() - day);
             nextDate = d;
         }

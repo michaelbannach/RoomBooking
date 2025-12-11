@@ -1,4 +1,3 @@
-// src/components/DateNavigator.jsx
 import { IconButton, Typography, Box } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
