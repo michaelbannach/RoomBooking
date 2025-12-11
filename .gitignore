@@ -1,22 +1,26 @@
-
-
-
+# Build output
 bin/
 obj/
 
-
+# User-specific files
 .vs/
 *.user
 *.suo
 
-
+# IDE / Editor
 .idea/
 *.iml
 
-
+# Logs
 *.log
 
+# OS files
 .DS_Store
 Thumbs.db
 
+# Environment
+.env
+.env.*
+
+# Configuration files — DO NOT COMMIT SECRETS
 appsettings.Development.json

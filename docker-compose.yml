@@ -1,11 +1,10 @@
-
 services:
   db:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: roombooking-db
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=Strong_RoomBooking_Pw123!
+      - SA_PASSWORD=${SA_PASSWORD}
     ports:
       - "1433:1433"
     volumes:
@@ -19,12 +18,13 @@ services:
     container_name: roombooking-api
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
-      ConnectionStrings__DefaultConnection: "Server=db,1433;Database=RoomBookingDb;User Id=sa;Password=Strong_RoomBooking_Pw123!;TrustServerCertificate=True;"
 
-      Jwt__Key: "DIES_IST_EIN_LANGER_JWT_KEY_FUER_ROOMBOOKING"
-      Jwt__Issuer: "RoomBooking"
-      Jwt__Audience: "RoomBookingClient"
-      Jwt__ExpiresMinutes: "60"
+      ConnectionStrings__DefaultConnection: "${ConnectionStrings__DefaultConnection}"
+
+      JWT__Key: "${JWT__Key}"
+      JWT__Issuer: "${JWT__Issuer}"
+      JWT__Audience: "${JWT__Audience}"
+      JWT__ExpiresMinutes: "${JWT__ExpiresMinutes}"
     ports:
       - "5135:5135"
     depends_on:
