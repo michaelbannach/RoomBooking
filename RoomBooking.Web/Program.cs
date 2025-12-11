@@ -18,7 +18,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        sqlOptions => sqlOptions.EnableRetryOnFailure()
+    ));
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
@@ -75,10 +78,47 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// 1) DB-Migration mit Retry (gilt für alle Environments)
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    var db = services.GetRequiredService<AppDbContext>();
+
+    const int maxAttempts = 5;
+
+    for (var attempt = 1; attempt <= maxAttempts; attempt++)
+    {
+        try
+        {
+            Console.WriteLine($"### Running EF Core migrations... (Attempt {attempt}/{maxAttempts})");
+            await db.Database.MigrateAsync();
+            Console.WriteLine("### Migrations finished.");
+            break;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while applying migrations (attempt {Attempt})", attempt);
+
+            if (attempt == maxAttempts)
+            {
+                Console.WriteLine("### Max migration attempts reached. Rethrowing...");
+                throw;
+            }
+
+            Console.WriteLine("### Database not ready yet. Waiting 5 seconds before retry...");
+            await Task.Delay(TimeSpan.FromSeconds(5));
+        }
+    }
+}
+
+// 2) Danach SWAGGER + Seeding (nur Development)
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    // Räume, User, Booking seeden
     await DevelopmentSeeder.SeedAsync(app.Services);
 }
 
@@ -95,7 +135,6 @@ app.MapControllerRoute(
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();
 

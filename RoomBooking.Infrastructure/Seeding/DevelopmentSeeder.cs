@@ -31,6 +31,8 @@ public static class DevelopmentSeeder
         // 1) ROOM seeden
         if (!await db.Rooms.AnyAsync())
         {
+            
+            
             await db.Rooms.AddAsync(new Room
             {
                 Name = "Raum 1",
