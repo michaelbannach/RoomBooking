@@ -49,7 +49,7 @@ Ziel der Anwendung ist es, ein einfaches, modernes und intuitives Raum-Buchungss
 ```
 RoomBooking.Web                → Controller, Endpoints, Program/DI, DTOs, Mapping
 RoomBooking.Application        → Services, Interfaces
-RoomBooking.Infrastructure     → EF Core, Identity, DB-Kontext. OpenWeatherMap API
+RoomBooking.Infrastructure     → EF Core, Identity, DB-Kontext
 RoomBooking.Domain             → Domain Modelle
 ```
 Diese Layer-Trennung sorgt für testbaren, erweiterbaren und wartbaren Code.
